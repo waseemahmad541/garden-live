@@ -1,0 +1,130 @@
+import type { NotificationChannel, NotificationType } from "@prisma/client";
+import { prisma } from "@/lib/db/prisma";
+import { ApiError } from "@/lib/api/errors";
+import { jsonValue, optionalEnv, providerFetch, requiredEnv } from "@/lib/platform/providers";
+
+export type NotificationInput = {
+  userId?: string;
+  channel: NotificationChannel;
+  type: NotificationType;
+  to: string;
+  title: string;
+  message: string;
+  metadata?: Record<string, unknown>;
+};
+
+export async function createInAppNotification(input: Omit<NotificationInput, "to" | "channel"> & { userId: string }) {
+  return prisma.notification.create({
+    data: {
+      userId: input.userId,
+      type: input.type,
+      channel: "IN_APP",
+      title: input.title,
+      message: input.message,
+      status: "SENT",
+      sentAt: new Date(),
+      metadata: input.metadata === undefined ? undefined : jsonValue(input.metadata)
+    }
+  });
+}
+
+export async function sendWhatsApp(input: NotificationInput) {
+  const token = requiredEnv("WHATSAPP_ACCESS_TOKEN");
+  const phoneNumberId = requiredEnv("WHATSAPP_PHONE_NUMBER_ID");
+
+  return providerFetch(
+    `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: input.to.replace(/\D/g, ""),
+        type: "text",
+        text: {
+          preview_url: false,
+          body: `${input.title}\n\n${input.message}`
+        }
+      })
+    },
+    "whatsapp"
+  );
+}
+
+export async function sendEmail(input: NotificationInput) {
+  const resendApiKey = optionalEnv("RESEND_API_KEY");
+  const from = optionalEnv("SMTP_FROM") || "Garden Live <no-reply@gardenlive.in>";
+  if (!resendApiKey) throw new ApiError(503, "RESEND_API_KEY is not configured for email delivery.", "EMAIL_NOT_CONFIGURED");
+
+  return providerFetch(
+    "https://api.resend.com/emails",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from,
+        to: [input.to],
+        subject: input.title,
+        text: input.message
+      })
+    },
+    "email"
+  );
+}
+
+export async function sendSms(input: NotificationInput) {
+  const authKey = requiredEnv("MSG91_AUTH_KEY");
+  const senderId = optionalEnv("MSG91_SENDER_ID") || "GRNLIV";
+
+  return providerFetch(
+    "https://control.msg91.com/api/v5/flow/",
+    {
+      method: "POST",
+      headers: {
+        authkey: authKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        sender: senderId,
+        mobiles: input.to.replace(/\D/g, ""),
+        VAR1: input.title,
+        VAR2: input.message
+      })
+    },
+    "sms"
+  );
+}
+
+export async function sendNotification(input: NotificationInput) {
+  const result =
+    input.channel === "WHATSAPP"
+      ? await sendWhatsApp(input)
+      : input.channel === "EMAIL"
+        ? await sendEmail(input)
+        : input.channel === "SMS"
+          ? await sendSms(input)
+          : null;
+
+  if (input.userId) {
+    await prisma.notification.create({
+      data: {
+        userId: input.userId,
+        title: input.title,
+        message: input.message,
+        type: input.type,
+        channel: input.channel,
+        status: "SENT",
+        sentAt: new Date(),
+        metadata: jsonValue({ ...input.metadata, providerResult: result })
+      }
+    });
+  }
+
+  return result;
+}

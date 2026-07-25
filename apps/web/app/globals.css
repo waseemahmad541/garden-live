@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --gl-background: #f7f8f6;
+  --gl-foreground: #111713;
+  --gl-surface: #ffffff;
+  --gl-border: #e3e8e2;
+  --gl-ring: #1f5b3a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--gl-background);
+  color: var(--gl-foreground);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: #eaf6ef;
+  color: #111713;
+}
+
+@layer utilities {
+  .gl-container {
+    @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .gl-focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-botanical-green focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-cloud;
+  }
+
+  .gl-rise {
+    animation: gl-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .gl-fade {
+    animation: gl-fade 900ms ease both;
+  }
+
+  .gl-delay-1 {
+    animation-delay: 120ms;
+  }
+
+  .gl-delay-2 {
+    animation-delay: 220ms;
+  }
+}
+
+@keyframes gl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gl-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,116 @@
+services:
+  garden-live-nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      garden-live-web:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME:-gardenlive.in}
+      DOMAIN_ALIASES: ${DOMAIN_ALIASES:-www.gardenlive.in}
+    volumes:
+      - ./ops/nginx/templates:/etc/nginx/templates:ro
+      - garden_live_certbot_www:/var/www/certbot
+      - garden_live_letsencrypt:/etc/letsencrypt
+      - garden_live_nginx_logs:/var/log/nginx
+    networks:
+      - garden-live
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  garden-live-certbot:
+    image: certbot/certbot:v2.11.0
+    profiles:
+      - ssl
+    volumes:
+      - garden_live_certbot_www:/var/www/certbot
+      - garden_live_letsencrypt:/etc/letsencrypt
+
+  garden-live-openssl:
+    image: alpine/openssl:3.3.2
+    profiles:
+      - ssl
+    volumes:
+      - garden_live_letsencrypt:/etc/letsencrypt
+
+  garden-live-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    image: garden-live-migrate:production
+    env_file:
+      - .env.production
+    depends_on:
+      garden-live-postgres:
+        condition: service_healthy
+    networks:
+      - garden-live
+    restart: "no"
+
+  garden-live-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: garden-live-web:production
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    depends_on:
+      garden-live-postgres:
+        condition: service_healthy
+      garden-live-migrate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - garden-live
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  garden-live-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    volumes:
+      - garden_live_postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - garden-live
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+volumes:
+  garden_live_postgres_data:
+  garden_live_certbot_www:
+  garden_live_letsencrypt:
+  garden_live_nginx_logs:
+
+networks:
+  garden-live:
+    driver: bridge

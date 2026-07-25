@@ -1,0 +1,16 @@
+# Garden Live production cron examples.
+# Install on the VPS with: crontab ops/cron/garden-live.cron
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+COMPOSE_FILE=docker-compose.prod.yml
+DOMAIN_NAME=gardenlive.in
+
+# Renew Let's Encrypt certificates twice daily.
+17 3,15 * * * cd /opt/garden-live && sh ops/scripts/renew-letsencrypt.sh >> logs/certbot-renew.log 2>&1
+
+# Nightly PostgreSQL backup.
+25 2 * * * cd /opt/garden-live && sh ops/scripts/backup-postgres.sh >> logs/backup.log 2>&1
+
+# Health monitoring every 5 minutes.
+*/5 * * * * cd /opt/garden-live && sh ops/scripts/monitor-production.sh >> logs/monitor.log 2>&1

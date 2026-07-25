@@ -1,0 +1,15 @@
+.git
+.next
+node_modules
+**/node_modules
+**/.env
+**/.env.local
+**/.env.production
+outputs
+work
+.agents
+.codex
+npm-debug.log
+pnpm-debug.log
+Dockerfile
+docker-compose*.yml
