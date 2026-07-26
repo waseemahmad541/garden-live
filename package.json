@@ -3,11 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "pnpm --filter @garden-live/web dev",
-    "build": "pnpm --filter @garden-live/web build",
-    "start": "pnpm --filter @garden-live/web start",
-    "lint": "pnpm --filter @garden-live/web lint",
-    "typecheck": "pnpm --filter @garden-live/web typecheck"
+    "dev": "node scripts/with-root-env.cjs pnpm --filter @garden-live/web dev",
+    "build": "node scripts/with-root-env.cjs pnpm --filter @garden-live/web build",
+    "start": "node scripts/with-root-env.cjs pnpm --filter @garden-live/web start",
+    "lint": "node scripts/with-root-env.cjs pnpm --filter @garden-live/web lint",
+    "typecheck": "node scripts/with-root-env.cjs pnpm --filter @garden-live/web typecheck"
   },
   "workspaces": [
     "apps/*",
