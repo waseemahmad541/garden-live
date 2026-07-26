@@ -35,8 +35,6 @@ export function canonicalSiteUrl() {
 
 export function normalizeAuthEnvironment() {
   const siteUrl = canonicalSiteUrl();
-  process.env.NEXT_PUBLIC_SITE_URL = siteUrl;
-  process.env.NEXT_PUBLIC_APP_URL = siteUrl;
   process.env.AUTH_URL = siteUrl;
   process.env.NEXTAUTH_URL = siteUrl;
   return siteUrl;
