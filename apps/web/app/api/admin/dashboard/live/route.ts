@@ -1,8 +1,27 @@
+import type { PaymentProvider, PaymentStatus, VisitStatus } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { adminRoles, requireApiSession, requireRoles } from "@/lib/api/auth";
 import { apiError, apiResponse } from "@/lib/api/errors";
 
 export const dynamic = "force-dynamic";
+
+interface PaymentGroup {
+  provider: PaymentProvider;
+  status: PaymentStatus;
+  _sum: {
+    amount: unknown;
+  };
+  _count: {
+    id: number;
+  };
+}
+
+interface VisitStatusGroup {
+  status: VisitStatus;
+  _count: {
+    id: number;
+  };
+}
 
 function money(value: unknown) {
   return Number(value ?? 0);
@@ -71,8 +90,8 @@ export async function GET() {
       gardeners,
       supervisors,
       orders,
-      payments: payments.map((item) => ({ provider: item.provider, status: item.status, amount: money(item._sum.amount), count: item._count.id })),
-      visitsByStatus: visitsByStatus.map((item) => ({ status: item.status, count: item._count.id })),
+      payments: (payments as PaymentGroup[]).map((item) => ({ provider: item.provider, status: item.status, amount: money(item._sum.amount), count: item._count.id })),
+      visitsByStatus: (visitsByStatus as VisitStatusGroup[]).map((item) => ({ status: item.status, count: item._count.id })),
       generatedAt: new Date().toISOString()
     });
   } catch (error) {
