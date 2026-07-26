@@ -7,6 +7,7 @@ import { ArrowRight, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
+import { readJsonResponse } from "@/lib/http/safe-json";
 
 export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl?: string }) {
   const [mode, setMode] = useState<"email" | "phone">("email");
@@ -19,18 +20,24 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
     setLoading(true);
     setMessage(null);
     const form = new FormData(event.currentTarget);
-    const result = await signIn("email-password", {
-      email: form.get("email"),
-      password: form.get("password"),
-      redirect: false,
-      callbackUrl
-    });
-    setLoading(false);
-    if (result?.error) {
-      setMessage({ type: "error", text: "Email or password is incorrect." });
+    try {
+      const result = await signIn("email-password", {
+        email: form.get("email"),
+        password: form.get("password"),
+        redirect: false,
+        callbackUrl
+      });
+      setLoading(false);
+      if (result?.error) {
+        setMessage({ type: "error", text: "Email or password is incorrect." });
+        return;
+      }
+      window.location.href = result?.url ?? callbackUrl;
+    } catch {
+      setLoading(false);
+      setMessage({ type: "error", text: "Login is temporarily unavailable. Please try again." });
       return;
     }
-    window.location.href = result?.url ?? callbackUrl;
   }
 
   async function requestOtp(phone: string) {
@@ -39,7 +46,7 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, purpose: "LOGIN" })
     });
-    const data = await response.json();
+    const data = await readJsonResponse<{ error?: string; message?: string; devOtp?: string }>(response);
     if (!response.ok) throw new Error(data.error ?? "Could not send OTP.");
     setDevOtp(data.devOtp ?? "");
     setMessage({ type: "success", text: data.devOtp ? `OTP sent. Dev OTP: ${data.devOtp}` : "OTP sent." });
@@ -64,13 +71,19 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
       return;
     }
 
-    const result = await signIn("phone-otp", { phone, code, redirect: false, callbackUrl });
-    setLoading(false);
-    if (result?.error) {
-      setMessage({ type: "error", text: "OTP is invalid or expired." });
+    try {
+      const result = await signIn("phone-otp", { phone, code, redirect: false, callbackUrl });
+      setLoading(false);
+      if (result?.error) {
+        setMessage({ type: "error", text: "OTP is invalid or expired." });
+        return;
+      }
+      window.location.href = result?.url ?? callbackUrl;
+    } catch {
+      setLoading(false);
+      setMessage({ type: "error", text: "OTP login is temporarily unavailable. Please try again." });
       return;
     }
-    window.location.href = result?.url ?? callbackUrl;
   }
 
   return (
