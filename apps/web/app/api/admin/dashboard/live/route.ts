@@ -1,13 +1,16 @@
-import type { PaymentProvider, PaymentStatus, VisitStatus } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { adminRoles, requireApiSession, requireRoles } from "@/lib/api/auth";
 import { apiError, apiResponse } from "@/lib/api/errors";
 
 export const dynamic = "force-dynamic";
 
+type PaymentProviderValue = "RAZORPAY" | "STRIPE" | "CASH" | "BANK_TRANSFER" | "UPI";
+type PaymentStatusValue = "CREATED" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+type VisitStatusValue = "SCHEDULED" | "ASSIGNED" | "ON_THE_WAY" | "IN_PROGRESS" | "COMPLETED" | "MISSED" | "CANCELLED";
+
 interface PaymentGroup {
-  provider: PaymentProvider;
-  status: PaymentStatus;
+  provider: PaymentProviderValue;
+  status: PaymentStatusValue;
   _sum: {
     amount: unknown;
   };
@@ -17,7 +20,7 @@ interface PaymentGroup {
 }
 
 interface VisitStatusGroup {
-  status: VisitStatus;
+  status: VisitStatusValue;
   _count: {
     id: number;
   };
