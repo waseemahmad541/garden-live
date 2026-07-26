@@ -3,11 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:validate": "prisma validate",
-    "db:format": "prisma format",
-    "db:migrate": "prisma migrate deploy",
-    "db:seed": "node prisma/seed.js"
+    "db:generate": "node ../../scripts/with-root-env.cjs prisma generate",
+    "db:validate": "node ../../scripts/with-root-env.cjs prisma validate",
+    "db:format": "node ../../scripts/with-root-env.cjs prisma format",
+    "db:migrate": "node ../../scripts/with-root-env.cjs prisma migrate deploy",
+    "db:seed": "node ../../scripts/with-root-env.cjs node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0"
