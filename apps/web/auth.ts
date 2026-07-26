@@ -6,10 +6,139 @@ import { prisma } from "@/lib/db/prisma";
 import { hashToken } from "@/lib/auth/crypto";
 import { assignRole, createCustomerProfileIfNeeded, getUserRoles, loadAuthUserById } from "@/lib/auth/users";
 import { getPrimaryRole, roleHome } from "@/lib/auth/permissions";
+import { normalizeAuthEnvironment } from "@/lib/env/urls";
+
+normalizeAuthEnvironment();
+
+const authProviders: NextAuthConfig["providers"] = [
+  Credentials({
+    id: "email-password",
+    name: "Email and password",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Password", type: "password" }
+    },
+    async authorize(credentials) {
+      const email = String(credentials?.email ?? "").trim().toLowerCase();
+      const password = String(credentials?.password ?? "");
+
+      if (!email || !password) return null;
+
+      const user = await prisma.user.findFirst({
+        where: {
+          email,
+          deletedAt: null,
+          status: "ACTIVE"
+        }
+      });
+
+      if (!user?.passwordHash) return null;
+
+      const validPassword = await compare(password, user.passwordHash);
+      if (!validPassword) return null;
+
+      const roles = await getUserRoles(user.id);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() }
+      });
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.avatarUrl,
+        roles
+      };
+    }
+  }),
+  Credentials({
+    id: "phone-otp",
+    name: "Phone OTP",
+    credentials: {
+      phone: { label: "Phone", type: "text" },
+      code: { label: "OTP", type: "text" }
+    },
+    async authorize(credentials) {
+      const phone = String(credentials?.phone ?? "").trim();
+      const code = String(credentials?.code ?? "").trim();
+
+      if (!phone || !code) return null;
+
+      const otp = await prisma.authOtpCode.findFirst({
+        where: {
+          phone,
+          purpose: "LOGIN",
+          consumedAt: null,
+          deletedAt: null,
+          expiresAt: {
+            gt: new Date()
+          }
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      });
+
+      if (!otp || otp.attempts >= otp.maxAttempts) return null;
+
+      const isValid = otp.codeHash === hashToken(code);
+
+      if (!isValid) {
+        await prisma.authOtpCode.update({
+          where: { id: otp.id },
+          data: { attempts: { increment: 1 } }
+        });
+        return null;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { phone }
+      });
+
+      if (!user || user.status !== "ACTIVE" || user.deletedAt) return null;
+
+      await prisma.$transaction([
+        prisma.authOtpCode.update({
+          where: { id: otp.id },
+          data: { consumedAt: new Date() }
+        }),
+        prisma.user.update({
+          where: { id: user.id },
+          data: {
+            phoneVerifiedAt: user.phoneVerifiedAt ?? new Date(),
+            lastLoginAt: new Date()
+          }
+        })
+      ]);
+
+      const roles = await getUserRoles(user.id);
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.avatarUrl,
+        roles
+      };
+    }
+  })
+];
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  authProviders.push(
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: false
+    })
+  );
+}
 
 export const authConfig = {
   trustHost: true,
-secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 24 * 30
@@ -17,126 +146,7 @@ secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/login"
   },
-  providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-      allowDangerousEmailAccountLinking: false
-    }),
-    Credentials({
-      id: "email-password",
-      name: "Email and password",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        const email = String(credentials?.email ?? "").trim().toLowerCase();
-        const password = String(credentials?.password ?? "");
-
-        if (!email || !password) return null;
-
-        const user = await prisma.user.findFirst({
-          where: {
-            email,
-            deletedAt: null,
-            status: "ACTIVE"
-          }
-        });
-
-        if (!user?.passwordHash) return null;
-
-        const validPassword = await compare(password, user.passwordHash);
-        if (!validPassword) return null;
-
-        const roles = await getUserRoles(user.id);
-
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { lastLoginAt: new Date() }
-        });
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.avatarUrl,
-          roles
-        };
-      }
-    }),
-    Credentials({
-      id: "phone-otp",
-      name: "Phone OTP",
-      credentials: {
-        phone: { label: "Phone", type: "text" },
-        code: { label: "OTP", type: "text" }
-      },
-      async authorize(credentials) {
-        const phone = String(credentials?.phone ?? "").trim();
-        const code = String(credentials?.code ?? "").trim();
-
-        if (!phone || !code) return null;
-
-        const otp = await prisma.authOtpCode.findFirst({
-          where: {
-            phone,
-            purpose: "LOGIN",
-            consumedAt: null,
-            deletedAt: null,
-            expiresAt: {
-              gt: new Date()
-            }
-          },
-          orderBy: {
-            createdAt: "desc"
-          }
-        });
-
-        if (!otp || otp.attempts >= otp.maxAttempts) return null;
-
-        const isValid = otp.codeHash === hashToken(code);
-
-        if (!isValid) {
-          await prisma.authOtpCode.update({
-            where: { id: otp.id },
-            data: { attempts: { increment: 1 } }
-          });
-          return null;
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { phone }
-        });
-
-        if (!user || user.status !== "ACTIVE" || user.deletedAt) return null;
-
-        await prisma.$transaction([
-          prisma.authOtpCode.update({
-            where: { id: otp.id },
-            data: { consumedAt: new Date() }
-          }),
-          prisma.user.update({
-            where: { id: user.id },
-            data: {
-              phoneVerifiedAt: user.phoneVerifiedAt ?? new Date(),
-              lastLoginAt: new Date()
-            }
-          })
-        ]);
-
-        const roles = await getUserRoles(user.id);
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.avatarUrl,
-          roles
-        };
-      }
-    })
-  ],
+  providers: authProviders,
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider !== "google") return true;
