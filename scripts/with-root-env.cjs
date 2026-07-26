@@ -35,7 +35,7 @@ function loadEnvFile(filePath) {
     }
 
     const key = line.slice(0, separatorIndex).trim();
-    if (!key || key.startsWith("export ")) {
+    if (!key || key.startsWith("export ") || process.env[key]) {
       continue;
     }
 
