@@ -57,7 +57,22 @@ export async function sendWhatsApp(input: NotificationInput) {
 export async function sendEmail(input: NotificationInput) {
   const resendApiKey = optionalEnv("RESEND_API_KEY");
   const from = optionalEnv("SMTP_FROM") || "Garden Live <no-reply@gardenlive.in>";
-  if (!resendApiKey) throw new ApiError(503, "RESEND_API_KEY is not configured for email delivery.", "EMAIL_NOT_CONFIGURED");
+  const provider = resendApiKey ? "resend" : "none";
+
+  console.info("[email] delivery provider resolved", {
+    provider,
+    from,
+    to: input.to,
+    type: input.type
+  });
+
+  if (!resendApiKey) {
+    console.error("[email] delivery is not configured", {
+      missing: ["RESEND_API_KEY"],
+      smtpConfigured: Boolean(optionalEnv("SMTP_HOST") && optionalEnv("SMTP_USER") && optionalEnv("SMTP_PASSWORD"))
+    });
+    throw new ApiError(503, "RESEND_API_KEY is not configured for email delivery.", "EMAIL_NOT_CONFIGURED");
+  }
 
   return providerFetch(
     "https://api.resend.com/emails",
