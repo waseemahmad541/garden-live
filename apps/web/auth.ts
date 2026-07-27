@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { hashToken } from "@/lib/auth/crypto";
 import { assignRole, createCustomerProfileIfNeeded, getUserRoles, loadAuthUserById } from "@/lib/auth/users";
 import { getPrimaryRole, roleHome } from "@/lib/auth/permissions";
+import { normalizeEmail, normalizeOtp, normalizePhone } from "@/lib/auth/validators";
 import { normalizeAuthEnvironment } from "@/lib/env/urls";
 
 normalizeAuthEnvironment();
@@ -19,7 +20,7 @@ const authProviders: NextAuthConfig["providers"] = [
       password: { label: "Password", type: "password" }
     },
     async authorize(credentials) {
-      const email = String(credentials?.email ?? "").trim().toLowerCase();
+      const email = normalizeEmail(credentials?.email);
       const password = String(credentials?.password ?? "");
 
       if (!email || !password) return null;
@@ -61,8 +62,8 @@ const authProviders: NextAuthConfig["providers"] = [
       code: { label: "OTP", type: "text" }
     },
     async authorize(credentials) {
-      const phone = String(credentials?.phone ?? "").trim();
-      const code = String(credentials?.code ?? "").trim();
+      const phone = normalizePhone(credentials?.phone);
+      const code = normalizeOtp(credentials?.code);
 
       if (!phone || !code) return null;
 
