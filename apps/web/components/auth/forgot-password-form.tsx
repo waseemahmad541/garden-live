@@ -6,6 +6,18 @@ import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
+import { readJsonResponse } from "@/lib/http/safe-json";
+
+type ForgotPasswordResponse = Record<string, unknown> & {
+  error?: string | { message?: string };
+  message?: string;
+  devResetToken?: string;
+};
+
+function errorMessage(error: ForgotPasswordResponse["error"]) {
+  if (typeof error === "string") return error;
+  return error?.message;
+}
 
 export function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
@@ -21,10 +33,10 @@ export function ForgotPasswordForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: form.get("email") })
     });
-    const data = await response.json();
+    const data = await readJsonResponse<ForgotPasswordResponse>(response);
     setLoading(false);
     if (!response.ok) {
-      setMessage({ type: "error", text: data.error ?? "Could not create reset link." });
+      setMessage({ type: "error", text: errorMessage(data.error) ?? "Could not create reset link." });
       return;
     }
     const dev = data.devResetToken ? ` Dev reset token: ${data.devResetToken}` : "";
