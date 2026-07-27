@@ -7,7 +7,8 @@
     "db:validate": "node ../../scripts/with-root-env.cjs prisma validate",
     "db:format": "node ../../scripts/with-root-env.cjs prisma format",
     "db:migrate": "node ../../scripts/with-root-env.cjs prisma migrate deploy",
-    "db:seed": "node ../../scripts/with-root-env.cjs node prisma/seed.js"
+    "db:seed": "node ../../scripts/with-root-env.cjs node prisma/seed.js",
+    "db:seed:admin": "node ../../scripts/with-root-env.cjs node prisma/seed-admin.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0"
