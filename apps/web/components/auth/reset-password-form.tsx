@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
+import { readJsonResponse, responseErrorMessage } from "@/lib/http/safe-json";
 
 export function ResetPasswordForm({ token = "" }: { token?: string }) {
   const [loading, setLoading] = useState(false);
@@ -20,9 +21,12 @@ export function ResetPasswordForm({ token = "" }: { token?: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: form.get("token"), password: form.get("password") })
     });
-    const data = await response.json();
+    const data = await readJsonResponse<{ error?: unknown; message?: string }>(response);
     setLoading(false);
-    setMessage({ type: response.ok ? "success" : "error", text: data.message ?? data.error ?? "Could not reset password." });
+    setMessage({
+      type: response.ok ? "success" : "error",
+      text: response.ok ? data.message ?? "Password reset successfully." : responseErrorMessage(data.error, "Could not reset password.")
+    });
   }
 
   return (
