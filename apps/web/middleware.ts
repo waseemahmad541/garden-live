@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
 import { hasRouteAccess } from "@/lib/auth/permissions";
+import { authSecret, sessionCookieNames } from "@/lib/env/auth-env";
 
 const publicRoutes = [
   "/",
@@ -54,13 +56,28 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET
-  });
+  const secret = authSecret();
+  let token: JWT | null = null;
+
+  for (const cookieName of sessionCookieNames()) {
+    token = await getToken({
+      req: request,
+      secret,
+      cookieName,
+      secureCookie: cookieName.startsWith("__Secure-")
+    });
+
+    if (token) break;
+  }
+
   const roles = Array.isArray(token?.roles) ? token.roles : [];
 
   if (!token) {
+    console.warn("[auth-middleware] missing or unreadable session token", {
+      path: pathname,
+      hasSecret: Boolean(secret),
+      cookies: request.cookies.getAll().map((cookie) => cookie.name)
+    });
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
