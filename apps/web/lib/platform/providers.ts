@@ -12,13 +12,34 @@ export function optionalEnv(name: string) {
 }
 
 export async function providerFetch<T>(url: string, init: RequestInit, provider: string): Promise<T> {
+  console.info(`[provider:${provider}] request started`, {
+    url,
+    method: init.method ?? "GET"
+  });
+
   const response = await fetch(url, init);
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : {};
+  let payload: unknown = {};
+
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch {
+    payload = { raw: text.slice(0, 500) };
+  }
 
   if (!response.ok) {
+    console.error(`[provider:${provider}] request failed`, {
+      status: response.status,
+      statusText: response.statusText,
+      payload
+    });
     throw new ApiError(response.status, `${provider} request failed.`, `${provider.toUpperCase()}_REQUEST_FAILED`);
   }
+
+  console.info(`[provider:${provider}] request succeeded`, {
+    status: response.status,
+    payload
+  });
 
   return payload as T;
 }
