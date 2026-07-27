@@ -7,7 +7,7 @@ import { hashToken } from "@/lib/auth/crypto";
 import { assignRole, createCustomerProfileIfNeeded, getUserRoles, loadAuthUserById } from "@/lib/auth/users";
 import { getPrimaryRole, roleHome } from "@/lib/auth/permissions";
 import { normalizeEmail, normalizeOtp, normalizePhone } from "@/lib/auth/validators";
-import { authSecret } from "@/lib/env/auth-env";
+import { authSecret, isProductionSite, sessionCookieName } from "@/lib/env/auth-env";
 import { normalizeAuthEnvironment } from "@/lib/env/urls";
 
 normalizeAuthEnvironment();
@@ -175,6 +175,18 @@ export const authConfig = {
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 24 * 30
+  },
+  useSecureCookies: isProductionSite(),
+  cookies: {
+    sessionToken: {
+      name: sessionCookieName(),
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProductionSite()
+      }
+    }
   },
   pages: {
     signIn: "/login"
