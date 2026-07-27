@@ -22,7 +22,7 @@ export function normalizeOtp(value: unknown) {
 
 export function normalizeOtpPurpose(value: unknown): AuthOtpPurpose {
   const purpose = String(value ?? "LOGIN");
-  if (purpose === "PHONE_VERIFICATION" || purpose === "EMAIL_VERIFICATION" || purpose === "PASSWORD_RESET") {
+  if (purpose === "PHONE_VERIFICATION") {
     return purpose;
   }
   return "LOGIN";
