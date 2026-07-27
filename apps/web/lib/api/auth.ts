@@ -7,7 +7,7 @@ export type ApiSession = {
   roles: RoleName[];
 };
 
-export const adminRoles: RoleName[] = ["SUPER_ADMIN", "ADMIN"];
+export const adminRoles: RoleName[] = ["ADMIN"];
 export const operationsRoles: RoleName[] = ["SUPER_ADMIN", "ADMIN", "SUPERVISOR", "GARDENER"];
 export const allBusinessRoles: RoleName[] = [
   "SUPER_ADMIN",
