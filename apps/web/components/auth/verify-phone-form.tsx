@@ -6,7 +6,7 @@ import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
-import { readJsonResponse } from "@/lib/http/safe-json";
+import { readJsonResponse, responseErrorMessage } from "@/lib/http/safe-json";
 
 export function VerifyPhoneForm() {
   const [loading, setLoading] = useState(false);
@@ -22,11 +22,11 @@ export function VerifyPhoneForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, purpose: "PHONE_VERIFICATION" })
     });
-    const data = await readJsonResponse<{ error?: string; message?: string; devOtp?: string }>(response);
+    const data = await readJsonResponse<{ error?: unknown; message?: string; devOtp?: string }>(response);
     setLoading(false);
     setMessage({
       type: response.ok ? "success" : "error",
-      text: response.ok && data.devOtp ? `OTP sent. Dev OTP: ${data.devOtp}` : data.message ?? data.error ?? "Could not send OTP."
+      text: response.ok && data.devOtp ? `OTP sent. Dev OTP: ${data.devOtp}` : data.message ?? responseErrorMessage(data.error, "Could not send OTP.")
     });
   }
 
@@ -40,9 +40,12 @@ export function VerifyPhoneForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone: form.get("phone"), otp: form.get("otp") })
     });
-    const data = await readJsonResponse<{ error?: string; message?: string }>(response);
+    const data = await readJsonResponse<{ error?: unknown; message?: string }>(response);
     setLoading(false);
-    setMessage({ type: response.ok ? "success" : "error", text: data.message ?? data.error ?? "Could not verify phone." });
+    setMessage({
+      type: response.ok ? "success" : "error",
+      text: data.message ?? responseErrorMessage(data.error, "Could not verify phone.")
+    });
   }
 
   return (
