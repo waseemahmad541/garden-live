@@ -7,6 +7,7 @@ import { hashToken } from "@/lib/auth/crypto";
 import { assignRole, createCustomerProfileIfNeeded, getUserRoles, loadAuthUserById } from "@/lib/auth/users";
 import { getPrimaryRole, roleHome } from "@/lib/auth/permissions";
 import { normalizeEmail, normalizeOtp, normalizePhone } from "@/lib/auth/validators";
+import { authSecret } from "@/lib/env/auth-env";
 import { normalizeAuthEnvironment } from "@/lib/env/urls";
 
 normalizeAuthEnvironment();
@@ -23,20 +24,38 @@ const authProviders: NextAuthConfig["providers"] = [
       const email = normalizeEmail(credentials?.email);
       const password = String(credentials?.password ?? "");
 
-      if (!email || !password) return null;
+      if (!email || !password) {
+        console.warn("[auth-login] missing email or password", { hasEmail: Boolean(email), hasPassword: Boolean(password) });
+        return null;
+      }
 
       const user = await prisma.user.findFirst({
         where: {
           email,
-          deletedAt: null,
-          status: "ACTIVE"
+          deletedAt: null
         }
       });
 
-      if (!user?.passwordHash) return null;
+      if (!user) {
+        console.warn("[auth-login] user not found", { email });
+        return null;
+      }
+
+      if (user.status !== "ACTIVE") {
+        console.warn("[auth-login] user is not active", { email, userId: user.id, status: user.status });
+        return null;
+      }
+
+      if (!user.passwordHash) {
+        console.warn("[auth-login] user has no password hash", { email, userId: user.id });
+        return null;
+      }
 
       const validPassword = await compare(password, user.passwordHash);
-      if (!validPassword) return null;
+      if (!validPassword) {
+        console.warn("[auth-login] bcrypt compare failed", { email, userId: user.id });
+        return null;
+      }
 
       const roles = await getUserRoles(user.id);
 
@@ -44,6 +63,8 @@ const authProviders: NextAuthConfig["providers"] = [
         where: { id: user.id },
         data: { lastLoginAt: new Date() }
       });
+
+      console.info("[auth-login] credentials accepted", { email, userId: user.id, roles });
 
       return {
         id: user.id,
@@ -65,7 +86,10 @@ const authProviders: NextAuthConfig["providers"] = [
       const phone = normalizePhone(credentials?.phone);
       const code = normalizeOtp(credentials?.code);
 
-      if (!phone || !code) return null;
+      if (!phone || !code) {
+        console.warn("[auth-otp-login] missing phone or code", { hasPhone: Boolean(phone), hasCode: Boolean(code) });
+        return null;
+      }
 
       const otp = await prisma.authOtpCode.findFirst({
         where: {
@@ -82,7 +106,10 @@ const authProviders: NextAuthConfig["providers"] = [
         }
       });
 
-      if (!otp || otp.attempts >= otp.maxAttempts) return null;
+      if (!otp || otp.attempts >= otp.maxAttempts) {
+        console.warn("[auth-otp-login] otp not found or max attempts reached", { phone });
+        return null;
+      }
 
       const isValid = otp.codeHash === hashToken(code);
 
@@ -98,7 +125,10 @@ const authProviders: NextAuthConfig["providers"] = [
         where: { phone }
       });
 
-      if (!user || user.status !== "ACTIVE" || user.deletedAt) return null;
+      if (!user || user.status !== "ACTIVE" || user.deletedAt) {
+        console.warn("[auth-otp-login] user not found or inactive", { phone, userId: user?.id, status: user?.status });
+        return null;
+      }
 
       await prisma.$transaction([
         prisma.authOtpCode.update({
@@ -115,6 +145,8 @@ const authProviders: NextAuthConfig["providers"] = [
       ]);
 
       const roles = await getUserRoles(user.id);
+
+      console.info("[auth-otp-login] otp accepted", { phone, userId: user.id, roles });
 
       return {
         id: user.id,
@@ -139,7 +171,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
 export const authConfig = {
   trustHost: true,
-  secret: process.env.AUTH_SECRET,
+  secret: authSecret(),
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 24 * 30
