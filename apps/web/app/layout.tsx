@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     images: ["https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80"]
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    google: "6T4O-6LyKgBeDswZDMmPDk4y2HYdbaeZA_ESdx9QUd8"
   }
 };
 
