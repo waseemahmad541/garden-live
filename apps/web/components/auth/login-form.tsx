@@ -2,14 +2,27 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { ArrowRight, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
 import { readJsonResponse, responseErrorMessage } from "@/lib/http/safe-json";
 
-export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl?: string }) {
+function isSafeInternalPath(value: string | undefined | null) {
+  return Boolean(value?.startsWith("/") && !value.startsWith("//"));
+}
+
+async function resolvePostLoginUrl(callbackUrl?: string) {
+  const session = await getSession();
+  const roles = session?.user?.roles ?? [];
+
+  if (roles.includes("ADMIN")) return "/admin/dashboard";
+  if (isSafeInternalPath(callbackUrl)) return callbackUrl ?? "/customer/dashboard";
+  return session?.user?.homePath ?? "/customer/dashboard";
+}
+
+export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const [mode, setMode] = useState<"email" | "phone">("email");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error" | "info"; text: string } | null>(null);
@@ -25,14 +38,14 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
         email: form.get("email"),
         password: form.get("password"),
         redirect: false,
-        callbackUrl
+        callbackUrl: callbackUrl ?? "/"
       });
       setLoading(false);
       if (result?.error) {
         setMessage({ type: "error", text: "Email or password is incorrect." });
         return;
       }
-      window.location.href = result?.url ?? callbackUrl;
+      window.location.href = await resolvePostLoginUrl(callbackUrl);
     } catch {
       setLoading(false);
       setMessage({ type: "error", text: "Login is temporarily unavailable. Please try again." });
@@ -46,7 +59,7 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, purpose: "LOGIN" })
     });
-    const data = await readJsonResponse<{ error?: unknown; message?: string; devOtp?: string }>(response);
+    const data = await readJsonResponse<{ error?: string; message?: string; devOtp?: string }>(response);
     if (!response.ok) throw new Error(responseErrorMessage(data.error, "Could not send OTP."));
     setDevOtp(data.devOtp ?? "");
     setMessage({ type: "success", text: data.devOtp ? `OTP sent. Dev OTP: ${data.devOtp}` : "OTP sent." });
@@ -72,13 +85,13 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
     }
 
     try {
-      const result = await signIn("phone-otp", { phone, code, redirect: false, callbackUrl });
+      const result = await signIn("phone-otp", { phone, code, redirect: false, callbackUrl: callbackUrl ?? "/" });
       setLoading(false);
       if (result?.error) {
         setMessage({ type: "error", text: "OTP is invalid or expired." });
         return;
       }
-      window.location.href = result?.url ?? callbackUrl;
+      window.location.href = await resolvePostLoginUrl(callbackUrl);
     } catch {
       setLoading(false);
       setMessage({ type: "error", text: "OTP login is temporarily unavailable. Please try again." });
@@ -122,7 +135,7 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
         </form>
       )}
 
-      <Button type="button" variant="secondary" className="mt-4 w-full" onClick={() => signIn("google", { callbackUrl })}>
+      <Button type="button" variant="secondary" className="mt-4 w-full" onClick={() => signIn("google", { callbackUrl: callbackUrl ?? "/customer/dashboard" })}>
         Continue with Google
       </Button>
       <p className="mt-6 text-center text-sm text-neutral-slate">
