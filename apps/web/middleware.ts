@@ -58,16 +58,24 @@ export default async function middleware(request: NextRequest) {
 
   const secret = authSecret();
   let token: JWT | null = null;
+  let matchedCookieName = "";
 
   for (const cookieName of sessionCookieNames()) {
+    const hasCookie = request.cookies.has(cookieName) || request.cookies.getAll().some((cookie) => cookie.name.startsWith(`${cookieName}.`));
+    if (!hasCookie) continue;
+
     token = await getToken({
       req: request,
       secret,
       cookieName,
+      salt: cookieName,
       secureCookie: cookieName.startsWith("__Secure-")
     });
 
-    if (token) break;
+    if (token) {
+      matchedCookieName = cookieName;
+      break;
+    }
   }
 
   const roles = Array.isArray(token?.roles) ? token.roles : [];
@@ -85,6 +93,14 @@ export default async function middleware(request: NextRequest) {
 
   if (!hasRouteAccess(pathname, roles)) {
     return NextResponse.redirect(new URL("/unauthorized", request.url));
+  }
+
+  if (process.env.AUTH_DEBUG === "true") {
+    console.info("[auth-middleware] session token accepted", {
+      path: pathname,
+      cookieName: matchedCookieName,
+      roles
+    });
   }
 
   return NextResponse.next();
