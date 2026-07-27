@@ -7,7 +7,7 @@ import { ArrowRight, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
-import { readJsonResponse } from "@/lib/http/safe-json";
+import { readJsonResponse, responseErrorMessage } from "@/lib/http/safe-json";
 
 export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl?: string }) {
   const [mode, setMode] = useState<"email" | "phone">("email");
@@ -46,8 +46,8 @@ export function LoginForm({ callbackUrl = "/customer/dashboard" }: { callbackUrl
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, purpose: "LOGIN" })
     });
-    const data = await readJsonResponse<{ error?: string; message?: string; devOtp?: string }>(response);
-    if (!response.ok) throw new Error(data.error ?? "Could not send OTP.");
+    const data = await readJsonResponse<{ error?: unknown; message?: string; devOtp?: string }>(response);
+    if (!response.ok) throw new Error(responseErrorMessage(data.error, "Could not send OTP."));
     setDevOtp(data.devOtp ?? "");
     setMessage({ type: "success", text: data.devOtp ? `OTP sent. Dev OTP: ${data.devOtp}` : "OTP sent." });
   }
