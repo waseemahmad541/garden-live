@@ -47,6 +47,22 @@ function loadEnvFile(filePath) {
 loadEnvFile(path.join(rootDir, ".env"));
 loadEnvFile(path.join(rootDir, ".env.production"));
 
+if (process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
+  process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
+}
+
+if (process.env.NEXTAUTH_SECRET && !process.env.AUTH_SECRET) {
+  process.env.AUTH_SECRET = process.env.NEXTAUTH_SECRET;
+}
+
+if (process.env.AUTH_URL && !process.env.NEXTAUTH_URL) {
+  process.env.NEXTAUTH_URL = process.env.AUTH_URL;
+}
+
+if (process.env.NEXTAUTH_URL && !process.env.AUTH_URL) {
+  process.env.AUTH_URL = process.env.NEXTAUTH_URL;
+}
+
 const [command, ...args] = process.argv.slice(2);
 
 if (!command) {
