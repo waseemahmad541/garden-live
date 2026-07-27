@@ -6,7 +6,7 @@ import { ArrowRight, Mail, Phone, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/auth/form-message";
-import { readJsonResponse } from "@/lib/http/safe-json";
+import { readJsonResponse, responseErrorMessage } from "@/lib/http/safe-json";
 
 export function RegisterForm() {
   const [loading, setLoading] = useState(false);
@@ -27,10 +27,10 @@ export function RegisterForm() {
         password: form.get("password")
       })
     });
-    const data = await readJsonResponse<{ error?: string; message?: string; devEmailToken?: string; devPhoneOtp?: string }>(response);
+    const data = await readJsonResponse<{ error?: unknown; message?: string; devEmailToken?: string; devPhoneOtp?: string }>(response);
     setLoading(false);
     if (!response.ok) {
-      setMessage({ type: "error", text: data.error ?? "Could not create your account." });
+      setMessage({ type: "error", text: responseErrorMessage(data.error, "Could not create your account.") });
       return;
     }
     const dev = data.devEmailToken || data.devPhoneOtp ? ` Dev email token: ${data.devEmailToken ?? "-"} | Dev phone OTP: ${data.devPhoneOtp ?? "-"}` : "";
