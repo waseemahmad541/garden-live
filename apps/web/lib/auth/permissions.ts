@@ -12,7 +12,7 @@ export const roleHome: Record<RoleName, string> = {
 };
 
 export const routePermissions: Array<{ prefix: string; roles: RoleName[] }> = [
-  { prefix: "/admin", roles: ["SUPER_ADMIN", "ADMIN"] },
+  { prefix: "/admin", roles: ["ADMIN"] },
   { prefix: "/supervisor", roles: ["SUPER_ADMIN", "ADMIN", "SUPERVISOR"] },
   { prefix: "/gardener", roles: ["SUPER_ADMIN", "ADMIN", "GARDENER"] },
   { prefix: "/customer", roles: ["SUPER_ADMIN", "ADMIN", "CUSTOMER"] },
