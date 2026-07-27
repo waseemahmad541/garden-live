@@ -94,8 +94,60 @@ export async function sendEmail(input: NotificationInput) {
 }
 
 export async function sendSms(input: NotificationInput) {
-  const authKey = requiredEnv("MSG91_AUTH_KEY");
+  const twilioSid = optionalEnv("TWILIO_ACCOUNT_SID");
+  const twilioToken = optionalEnv("TWILIO_AUTH_TOKEN");
+  const twilioFrom = optionalEnv("TWILIO_FROM_NUMBER");
+
+  if (twilioSid && twilioToken && twilioFrom) {
+    console.info("[sms] delivery provider resolved", {
+      provider: "twilio",
+      from: twilioFrom,
+      to: input.to,
+      type: input.type
+    });
+
+    return providerFetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64")}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          From: twilioFrom,
+          To: input.to.replace(/[^\d+]/g, ""),
+          Body: input.message
+        })
+      },
+      "sms"
+    );
+  }
+
+  const authKey = optionalEnv("MSG91_AUTH_KEY");
+  const flowId = optionalEnv("MSG91_FLOW_ID");
   const senderId = optionalEnv("MSG91_SENDER_ID") || "GRNLIV";
+
+  if (!authKey || !flowId) {
+    console.error("[sms] delivery is not configured", {
+      missing: [
+        ...(!twilioSid ? ["TWILIO_ACCOUNT_SID"] : []),
+        ...(!twilioToken ? ["TWILIO_AUTH_TOKEN"] : []),
+        ...(!twilioFrom ? ["TWILIO_FROM_NUMBER"] : []),
+        ...(!authKey ? ["MSG91_AUTH_KEY"] : []),
+        ...(!flowId ? ["MSG91_FLOW_ID"] : [])
+      ]
+    });
+    throw new ApiError(503, "SMS delivery is not configured. Configure Twilio or MSG91.", "SMS_NOT_CONFIGURED");
+  }
+
+  console.info("[sms] delivery provider resolved", {
+    provider: "msg91",
+    senderId,
+    flowId,
+    to: input.to,
+    type: input.type
+  });
 
   return providerFetch(
     "https://control.msg91.com/api/v5/flow/",
@@ -106,10 +158,16 @@ export async function sendSms(input: NotificationInput) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        template_id: flowId,
         sender: senderId,
-        mobiles: input.to.replace(/\D/g, ""),
-        VAR1: input.title,
-        VAR2: input.message
+        short_url: "0",
+        recipients: [
+          {
+            mobiles: input.to.replace(/\D/g, ""),
+            var1: input.title,
+            var2: input.message
+          }
+        ]
       })
     },
     "sms"
