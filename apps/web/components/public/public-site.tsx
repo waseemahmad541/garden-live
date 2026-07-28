@@ -1,57 +1,81 @@
-import { EnquiryForm } from "@/components/public/enquiry-form";
-import { img, pageConfigs, type PageConfig, brandLine } from "@/components/public/v4-public-data";
+import { Footer, Navbar } from "@/components/layout";
+import { footerGroups, navItems, pageConfigs } from "@/components/public/v4-public-data";
 import {
-  BeforeAfter,
-  ContactCards,
-  ContentGrid,
-  DashboardPreview,
-  EnquirySection,
+  AiDemoSection,
+  BeforeAfterSection,
+  ContactSection,
+  DashboardPreviewSection,
   FaqSection,
+  FloatingActions,
+  GardenStoreSection,
   Hero,
-  HomeExperience,
-  HighlightGrid,
-  MapSection,
-  Process,
-  ProjectGallery,
-  PublicChrome,
-  Stats,
-  TestimonialsBlock
+  HomeHeroSection,
+  IotSection,
+  MembershipSection,
+  ModulesSection,
+  ProjectsSection,
+  TestimonialsSection
 } from "@/components/public/v4-public-sections";
 
-export { pageConfigs, PublicChrome };
-
-export function HomePublicPage() {
-  return <PublicChrome><HomeExperience /></PublicChrome>;
+export function PublicChrome({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-[#f3f7f0] text-botanical-black">
+      <Navbar items={navItems} ctaLabel="Book Free Visit" ctaHref="/book-garden-visit" className="fixed inset-x-0 top-0 z-50 border-white/10 bg-white/12 text-white shadow-none backdrop-blur-2xl [&_a]:text-white/82 [&_a:hover]:text-white [&_button]:border-white/20 [&_button]:bg-white/12 [&_button]:text-white [&_span]:text-white" />
+      {children}
+      <Footer groups={footerGroups} />
+      <FloatingActions />
+    </div>
+  );
 }
 
-export function AboutPublicPage() {
-  return <PublicChrome><Hero eyebrow="About Garden Live" title="A garden company built with the precision of a technology platform." description="Garden Live organizes garden ownership through memberships, AI care, accountable maintenance, curated products, QR records and premium delivery." image={img.villa} primaryLabel="Book Garden Visit" secondaryLabel="Explore Services" secondaryHref="/services" /><ContentGrid /><DashboardPreview /><EnquirySection title="Start your Garden Live journey" description="Share your space and goals. Garden Live will define the right service path." /></PublicChrome>;
+export function HomePage() {
+  return (
+    <PublicChrome>
+      <HomeHeroSection />
+      <ModulesSection />
+      <AiDemoSection />
+      <MembershipSection />
+      <ProjectsSection />
+      <BeforeAfterSection />
+      <IotSection />
+      <DashboardPreviewSection />
+      <GardenStoreSection />
+      <TestimonialsSection />
+      <FaqSection />
+      <ContactSection />
+    </PublicChrome>
+  );
 }
 
-export function ServicesPublicPage() {
-  return <PublicChrome><Hero eyebrow="Garden Live Services" title="A complete luxury garden ecosystem, not a list of services." description="Nursery supply, landscape design, maintenance, dedicated gardeners, AI diagnosis, QR passports, store products and corporate solutions." image={img.resort} primaryLabel="Book Consultation" secondaryLabel="View Gallery" secondaryHref="/gallery" /><BeforeAfter /><Process steps={["Consultation", "Survey", "Recommendation", "Approval", "Execution", "Digital Records"]} /><ProjectGallery /><FaqSection /></PublicChrome>;
+function GenericPage({ slug }: { slug: keyof typeof pageConfigs }) {
+  const page = pageConfigs[slug];
+  return (
+    <PublicChrome>
+      <Hero eyebrow={page.eyebrow} title={page.title} description={page.description} image={page.image} primaryLabel={page.primaryCta} primaryHref="/book-garden-visit" secondaryLabel={page.secondaryCta} secondaryHref={page.secondaryHref ?? "/services"} />
+      <ModulesSection />
+      <AiDemoSection />
+      <MembershipSection />
+      <ProjectsSection />
+      <FaqSection />
+      <ContactSection />
+    </PublicChrome>
+  );
 }
 
-export function PublicPage({ config }: { config: PageConfig }) {
-  return <PublicChrome><Hero eyebrow={config.eyebrow} title={config.title} description={config.description} image={config.image} primaryLabel={config.primaryCta} secondaryLabel={config.secondaryCta} secondaryHref={config.secondaryHref} /><Stats stats={config.stats} /><HighlightGrid highlights={config.highlights} /><ContentGrid sections={config.sections} /><Process steps={config.process} /><ProjectGallery /><FaqSection /><EnquirySection title={`Start with ${config.eyebrow}`} description="Share your location, space type and requirement. Garden Live will recommend the right next step." /><MapSection /></PublicChrome>;
-}
-
-export function GalleryPage() {
-  return <PublicChrome><Hero eyebrow="Gallery" title="Premium gardens, nurseries, rooftops and resort landscapes." description="Explore terrace gardens, living walls, luxury villa work, nursery selections, plant healthcare and premium garden products." image={img.hotel} primaryLabel="Book Visit" secondaryLabel="View Projects" secondaryHref="/projects" /><ProjectGallery /><BeforeAfter /><EnquirySection title="Make your garden part of the Garden Live story" description="Book a survey and let Garden Live design, maintain and document your transformation." /></PublicChrome>;
-}
-
-export function ProjectsPage() {
-  return <PublicChrome><Hero eyebrow="Projects Portfolio" title="Premium garden projects with every step documented." description="Garden Live tracks survey, quotation, approval, work orders, media, execution, handover and maintenance." image={img.villa} primaryLabel="Start Project" secondaryLabel="Corporate Solutions" secondaryHref="/corporate-solutions" /><ProjectGallery /><BeforeAfter /><EnquirySection title="Plan a Garden Live project" description="Share your location and requirement. Garden Live will guide survey, quotation, approval and execution." /></PublicChrome>;
-}
-
-export function TestimonialsPage({ compact = false }: { compact?: boolean }) {
-  return <TestimonialsBlock compact={compact} />;
-}
-
-export function BlogPage() {
-  return <PublicChrome><Hero eyebrow="Garden Live Blog" title="Care guides and operating notes for the future of gardens." description="Read insights on digital memberships, terrace gardens, AI plant health, Green Promise, nursery selection, corporate greenery and maintenance." image={img.night} primaryLabel="Book Visit" secondaryLabel="Explore Services" secondaryHref="/services" /><ContentGrid /><ProjectGallery /></PublicChrome>;
-}
-
-export function ContactPage({ booking = false }: { booking?: boolean }) {
-  return <PublicChrome><Hero eyebrow={booking ? "Book Garden Visit" : "Contact Garden Live"} title={booking ? "Schedule your Garden Live survey, visit or consultation." : "Talk to Garden Live about your garden, project, membership or partnership."} description={`Share your city, garden type, service need and preferred time. ${brandLine} can help with memberships, landscaping, nursery, maintenance, AI Plant Doctor, Garden Store and corporate solutions.`} image={img.home2} primaryLabel={booking ? "Submit Visit Request" : "Send Enquiry"} secondaryLabel="WhatsApp Garden Live" secondaryHref="https://wa.me/919999999999?text=I%20want%20to%20book%20a%20Garden%20Live%20visit" /><section className="gl-reveal py-20"><div className="gl-container grid gap-8 lg:grid-cols-[0.95fr_1.05fr]"><ContactCards /><EnquiryForm booking={booking} /></div></section><MapSection /><FaqSection /></PublicChrome>;
-}
+export function AboutPage() { return <GenericPage slug="corporate-solutions" />; }
+export function ServicesPage() { return <GenericPage slug="landscaping" />; }
+export function LandscapingPage() { return <GenericPage slug="landscaping" />; }
+export function PlantNurseryPage() { return <GenericPage slug="plant-nursery" />; }
+export function GardenMaintenancePage() { return <GenericPage slug="garden-maintenance" />; }
+export function DedicatedGardenerPage() { return <GenericPage slug="dedicated-gardener" />; }
+export function MembershipPlansPage() { return <GenericPage slug="membership-plans" />; }
+export function AiPlantDoctorPage() { return <GenericPage slug="ai-plant-doctor" />; }
+export function PlantScannerPage() { return <GenericPage slug="plant-scanner" />; }
+export function QrPlantPassportPage() { return <GenericPage slug="qr-plant-passport" />; }
+export function CorporateSolutionsPage() { return <GenericPage slug="corporate-solutions" />; }
+export function GalleryPage() { return <GenericPage slug="landscaping" />; }
+export function ProjectsPage() { return <GenericPage slug="landscaping" />; }
+export function BlogPage() { return <GenericPage slug="garden-health-reports" />; }
+export function GardenStorePage() { return <GenericPage slug="garden-store" />; }
+export function GardenHealthReportsPage() { return <GenericPage slug="garden-health-reports" />; }
+export function TestimonialsPage() { return <PublicChrome><TestimonialsSection /><ContactSection /></PublicChrome>; }
