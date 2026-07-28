@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Footer, Navbar } from "@/components/layout";
 import { footerGroups, navItems, pageConfigs } from "@/components/public/v4-public-data";
 import {
@@ -17,7 +18,7 @@ import {
   TestimonialsSection
 } from "@/components/public/v4-public-sections";
 
-export function PublicChrome({ children }: { children: React.ReactNode }) {
+export function PublicChrome({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#f3f7f0] text-botanical-black">
       <Navbar items={navItems} ctaLabel="Book Free Visit" ctaHref="/book-garden-visit" className="fixed inset-x-0 top-0 z-50 border-white/10 bg-white/12 text-white shadow-none backdrop-blur-2xl [&_a]:text-white/82 [&_a:hover]:text-white [&_button]:border-white/20 [&_button]:bg-white/12 [&_button]:text-white [&_span]:text-white" />
