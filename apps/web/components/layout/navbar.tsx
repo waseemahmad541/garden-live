@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Menu, Sprout, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -24,10 +25,8 @@ export function Navbar({ items, ctaLabel = "Get Started", ctaHref = "/login", cl
   return (
     <header className={cn("sticky top-0 z-40 border-b border-[#E3E8E2] bg-white/90 backdrop-blur-xl", className)}>
       <div className="gl-container flex h-16 items-center justify-between">
-        <Link href="/" className="gl-focus-ring inline-flex items-center gap-2 rounded-gl" aria-label="Garden Live home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-gl bg-botanical-green text-white">
-            <Sprout className="h-5 w-5" aria-hidden />
-          </span>
+        <Link href="/" className="gl-focus-ring inline-flex items-center gap-3 rounded-gl" aria-label="Garden Live home">
+          <Image src="/icon.svg" alt="" width={36} height={36} className="h-9 w-9 rounded-xl" priority />
           <span className="text-base font-semibold text-botanical-black">Garden Live</span>
         </Link>
 
@@ -57,7 +56,7 @@ export function Navbar({ items, ctaLabel = "Get Started", ctaHref = "/login", cl
         <div className="fixed inset-0 z-50 bg-white lg:hidden">
           <div className="flex h-16 items-center justify-between border-b border-[#E3E8E2] px-4">
             <span className="inline-flex items-center gap-2 text-base font-semibold text-botanical-black">
-              <Sprout className="h-5 w-5 text-botanical-green" aria-hidden />
+              <Image src="/icon.svg" alt="" width={28} height={28} className="h-7 w-7 rounded-lg" />
               Garden Live
             </span>
             <Button variant="ghost" size="icon" aria-label="Close menu" onClick={() => setOpen(false)}>
