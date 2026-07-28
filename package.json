@@ -15,5 +15,10 @@
   ],
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   }
 }

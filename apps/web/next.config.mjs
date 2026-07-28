@@ -7,16 +7,7 @@ const nextConfig = {
   transpilePackages: ["@garden-live/database"],
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com"
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com"
-      }
-    ]
+    remotePatterns: []
   },
   async headers() {
     return [
@@ -31,7 +22,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://checkout.razorpay.com https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.google-analytics.com; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://api.razorpay.com https://api.stripe.com https://res.cloudinary.com; frame-src 'self' https://www.google.com https://www.google.co.in https://maps.google.com https://api.razorpay.com https://checkout.razorpay.com https://js.stripe.com; media-src 'self' https://res.cloudinary.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://checkout.razorpay.com https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.google-analytics.com; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://api.razorpay.com https://api.stripe.com https://res.cloudinary.com; frame-src 'self' https://www.google.com https://www.google.co.in https://maps.google.com https://api.razorpay.com https://checkout.razorpay.com https://js.stripe.com; media-src 'self' https://res.cloudinary.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
           }
         ]
       },
