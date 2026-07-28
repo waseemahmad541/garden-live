@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PremiumHomePage } from "@/components/public/premium-home-page";
+import { HomePublicPage } from "@/components/public/public-site";
 
 export const metadata: Metadata = {
   title: "Garden Live | India's First AI Powered Digital Garden Membership Platform",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <PremiumHomePage />;
+  return <HomePublicPage />;
 }
