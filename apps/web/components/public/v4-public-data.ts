@@ -69,12 +69,12 @@ export const pageConfigs: Record<string, PageConfig> = {
   "garden-health-reports": cfg("garden-health-reports", "Garden Health Reports", "A premium health report for every Garden Live garden.", "Garden health score, plant health score, soil tests, water tests, pest risk, AI recommendations and supervisor review.", img.care, ["Garden Health", "Plant Health", "Soil Test", "AI Recommendations"], "Generate Report", "Book Visit", "/book-garden-visit")
 };
 
-export const navItems = ["Services:/services", "Membership:/membership-plans", "AI Doctor:/ai-plant-doctor", "Store:/garden-store", "Projects:/projects", "Contact:/contact"].map(toLink);
+export const navItems = ["About:/about", "Services:/services", "Membership:/membership-plans", "AI Doctor:/ai-plant-doctor", "Store:/garden-store", "Projects:/projects", "Blog:/blog", "Contact:/contact"].map(toLink);
 export const footerGroups = [
-  { title: "Platform", links: ["AI Plant Doctor:/ai-plant-doctor", "Plant Scanner:/plant-scanner", "QR Plant Passport:/qr-plant-passport", "Garden Health:/garden-health-reports"].map(toLink) },
-  { title: "Services", links: ["Landscaping:/landscaping", "Plant Nursery:/plant-nursery", "Maintenance:/garden-maintenance", "Dedicated Gardener:/dedicated-gardener"].map(toLink) },
-  { title: "Commerce", links: ["Membership:/membership-plans", "Garden Store:/garden-store", "Corporate:/corporate-solutions", "Book Visit:/book-garden-visit"].map(toLink) },
-  { title: "Dashboards", links: ["Customer:/customer/dashboard", "Gardener:/gardener/dashboard", "Supervisor:/supervisor/dashboard", "Admin:/admin/dashboard"].map(toLink) }
+  { title: "Platform", links: ["AI Plant Doctor:/ai-plant-doctor", "Plant Scanner:/plant-scanner", "QR Plant Passport:/qr-plant-passport", "Garden Health:/garden-health-reports", "FAQs:/faqs"].map(toLink) },
+  { title: "Services", links: ["Landscaping:/landscaping", "Plant Nursery:/plant-nursery", "Maintenance:/garden-maintenance", "Dedicated Gardener:/dedicated-gardener", "Corporate:/corporate-solutions"].map(toLink) },
+  { title: "Company", links: ["About:/about", "Projects:/projects", "Blog:/blog", "Careers:/careers", "Contact:/contact"].map(toLink) },
+  { title: "Legal", links: ["Privacy:/privacy-policy", "Terms:/terms", "Refund:/refund-policy", "Shipping:/shipping-policy", "Book Visit:/book-garden-visit"].map(toLink) }
 ];
 function toLink(item: string) { const [label, href] = item.split(":"); return { label, href }; }
 
@@ -100,7 +100,7 @@ export const modules = [
 
 export const faqs = [
   { question: "What makes Garden Live different?", answer: "Garden Live combines premium landscaping, plant nursery, garden maintenance, AI Plant Doctor, QR Plant Passport, memberships, store and dashboards in one digital garden platform." },
-  { question: "Did Version 6 change backend functionality?", answer: "No. Version 6 upgrades the public website experience only. Existing authentication, APIs, database, dashboards and business logic remain unchanged." },
+  { question: "Did Version 4 change backend functionality?", answer: "No. Version 4 upgrades the public experience only. Existing authentication, APIs, database, dashboards and business logic remain unchanged." },
   { question: "How does the Green Promise work?", answer: "Eligible plans define maintenance responsibility, plant replacement rules, visit history, warranty status and replacement requests through the Garden Live workflow." },
   { question: "Can Garden Live support offices and resorts?", answer: "Yes. Corporate solutions support office plants, campus greenery, resorts, builders, societies, AMC maintenance, tenders and project documents." }
 ];
