@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Footer, Navbar } from "@/components/layout";
 import { footerGroups, navItems, pageConfigs } from "@/components/public/v4-public-data";
+import { LaunchFloatingActions } from "@/components/public/public-launch-floating-actions";
 import {
   AiDemoSection,
   BeforeAfterSection,
@@ -25,6 +26,7 @@ export function PublicChrome({ children }: { children: ReactNode }) {
       {children}
       <Footer groups={footerGroups} />
       <FloatingActions />
+      <LaunchFloatingActions />
     </div>
   );
 }
