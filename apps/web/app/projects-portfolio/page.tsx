@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ProjectsPage } from "@/components/public/public-site";
+import { ProjectsListingPage } from "@/components/public/static-public-pages";
 
 export const metadata: Metadata = {
   title: "Projects Portfolio",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsPortfolioPage() {
-  return <ProjectsPage />;
+  return <ProjectsListingPage />;
 }
