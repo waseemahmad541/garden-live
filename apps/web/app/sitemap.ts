@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { blogPosts, projectItems } from "@/components/public/public-content";
 
 const baseUrl = "https://gardenlive.in";
 
@@ -23,11 +24,23 @@ const publicRoutes = [
   "/testimonials",
   "/blog",
   "/contact",
-  "/book-garden-visit"
+  "/book-garden-visit",
+  "/book-visit",
+  "/privacy-policy",
+  "/terms",
+  "/refund-policy",
+  "/shipping-policy",
+  "/careers",
+  "/faqs"
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return publicRoutes.map((route) => ({
+  const dynamicRoutes = [
+    ...blogPosts.map((post) => `/blog/${post.slug}`),
+    ...projectItems.map((project) => `/projects/${project.slug}`)
+  ];
+
+  return [...publicRoutes, ...dynamicRoutes].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: route === "" ? "weekly" : "monthly",
