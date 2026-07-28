@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/customer", "/gardener", "/supervisor", "/api"]
+        disallow: ["/admin", "/customer", "/gardener", "/supervisor", "/api", "/checkout"]
       }
     ],
     sitemap: "https://gardenlive.in/sitemap.xml"
