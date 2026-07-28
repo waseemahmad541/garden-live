@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BlogPage } from "@/components/public/public-site";
+import { BlogListingPage } from "@/components/public/static-public-pages";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function BlogRoutePage() {
-  return <BlogPage />;
+  return <BlogListingPage />;
 }
