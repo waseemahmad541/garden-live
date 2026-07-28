@@ -1,0 +1,9 @@
+<svg width="720" height="180" viewBox="0 0 720 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="180" rx="42" fill="#07130D"/>
+  <circle cx="90" cy="90" r="48" fill="#B7E66E"/>
+  <path d="M91 130C79 107 76 82 88 58C109 68 122 86 124 111C112 108 101 113 91 130Z" fill="#07130D"/>
+  <path d="M88 128C77 109 59 95 37 91C45 115 63 128 88 128Z" fill="#1F5B3A"/>
+  <path d="M96 126C107 103 127 91 153 91C146 116 126 130 96 126Z" fill="#1F5B3A"/>
+  <text x="165" y="82" fill="white" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="-1">Garden Live</text>
+  <text x="168" y="120" fill="#B7E66E" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600">India's First AI Powered Digital Garden Membership Platform</text>
+</svg>
