@@ -6,29 +6,28 @@ import {
 export const brandLine = "Garden Live - India's First AI Powered Digital Garden Membership Platform";
 export const whatsappHref = "https://wa.me/919999999999?text=I%20want%20to%20book%20a%20Garden%20Live%20visit";
 export const callHref = "tel:+919999999999";
-export const heroVideo = "https://res.cloudinary.com/demo/video/upload/q_auto,f_auto/forest.mp4";
 
 export const img = {
-  home: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=2400&q=90",
-  villa: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=88",
-  home2: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=2200&q=88",
-  farm: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=88",
-  hotel: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2200&q=88",
-  resort: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=2200&q=88",
-  campus: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=2200&q=88",
-  rooftop: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=2200&q=88",
-  nursery: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=2200&q=88",
-  night: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=88",
-  indoor: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=2200&q=88",
-  care: "https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=2200&q=88",
-  ai: "https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=2200&q=88",
-  passport: "https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=2200&q=88",
-  before: "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1600&q=84",
-  after: "https://images.unsplash.com/photo-1558521958-0a228e77d984?auto=format&fit=crop&w=1600&q=88",
-  store: "https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=2200&q=88",
-  a1: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
-  a2: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
-  a3: "https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?auto=format&fit=crop&w=300&q=80"
+  home: "/images/v4/hero-garden.svg",
+  villa: "/images/v4/luxury-villa.svg",
+  home2: "/images/v4/luxury-villa.svg",
+  farm: "/images/v4/garden-care.svg",
+  hotel: "/images/v4/luxury-villa.svg",
+  resort: "/images/v4/hero-garden.svg",
+  campus: "/images/v4/rooftop-garden.svg",
+  rooftop: "/images/v4/rooftop-garden.svg",
+  nursery: "/images/v4/premium-nursery.svg",
+  night: "/images/v4/hero-garden.svg",
+  indoor: "/images/v4/indoor-plants.svg",
+  care: "/images/v4/garden-care.svg",
+  ai: "/images/v4/ai-plant-doctor.svg",
+  passport: "/images/v4/qr-passport.svg",
+  before: "/images/v4/before-garden.svg",
+  after: "/images/v4/after-garden.svg",
+  store: "/images/v4/garden-store.svg",
+  a1: "/images/v4/avatar-ananya.svg",
+  a2: "/images/v4/avatar-rahul.svg",
+  a3: "/images/v4/avatar-meera.svg"
 };
 
 export type PageConfig = {
@@ -101,7 +100,7 @@ export const modules = [
 
 export const faqs = [
   { question: "What makes Garden Live different?", answer: "Garden Live combines premium landscaping, plant nursery, garden maintenance, AI Plant Doctor, QR Plant Passport, memberships, store and dashboards in one digital garden platform." },
-  { question: "Did Version 4 change backend functionality?", answer: "No. Version 4 upgrades the public experience only. Existing authentication, APIs, database, dashboards and business logic remain unchanged." },
+  { question: "Did Version 6 change backend functionality?", answer: "No. Version 6 upgrades the public website experience only. Existing authentication, APIs, database, dashboards and business logic remain unchanged." },
   { question: "How does the Green Promise work?", answer: "Eligible plans define maintenance responsibility, plant replacement rules, visit history, warranty status and replacement requests through the Garden Live workflow." },
   { question: "Can Garden Live support offices and resorts?", answer: "Yes. Corporate solutions support office plants, campus greenery, resorts, builders, societies, AMC maintenance, tenders and project documents." }
 ];
