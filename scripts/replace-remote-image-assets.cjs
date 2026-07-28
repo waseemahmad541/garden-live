@@ -4,7 +4,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const webRoot = path.join(root, "apps", "web");
 const host = "images." + "un" + "splash.com";
-const remoteImagePattern = new RegExp(`https://${host}/(photo-[^?"'\\]\\s]+)\\?auto=format&fit=crop&w=\\d+&q=\\d+`, "g");
+const remoteImagePattern = new RegExp(`https://${host}/(photo-[A-Za-z0-9-]+)\\?auto=format&fit=crop&w=\\d+&q=\\d+`, "g");
 
 const imageByPhotoId = {
   "photo-1600566753190-17f0baa2a6c3": "/images/v4/hero-garden.svg",
