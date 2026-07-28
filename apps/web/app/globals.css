@@ -76,6 +76,38 @@ select {
   .gl-count {
     animation: gl-pulse-count 2.4s ease-in-out infinite;
   }
+
+  .gl-headline {
+    background: linear-gradient(105deg, #ffffff 0%, #e8f7ea 34%, #b7e66e 52%, #ffffff 72%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gl-headline-sheen 7s ease-in-out infinite;
+  }
+
+  .gl-button-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gl-button-shine::after {
+    content: "";
+    position: absolute;
+    inset: -40% auto -40% -60%;
+    width: 45%;
+    transform: rotate(18deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: gl-button-shine 3.8s ease-in-out infinite;
+  }
+
+  .gl-scroll-line {
+    animation: gl-scroll-line 1.8s ease-in-out infinite;
+  }
+
+  .gl-scan-line {
+    animation: gl-scan-line 2.4s ease-in-out infinite;
+  }
 }
 
 @keyframes gl-rise {
@@ -118,6 +150,50 @@ select {
   50% {
     transform: translateY(-2px);
     opacity: 0.82;
+  }
+}
+
+@keyframes gl-headline-sheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gl-button-shine {
+  0%,
+  45% {
+    transform: translateX(0) rotate(18deg);
+  }
+  100% {
+    transform: translateX(420%) rotate(18deg);
+  }
+}
+
+@keyframes gl-scroll-line {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(260%);
+  }
+}
+
+@keyframes gl-scan-line {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  18%,
+  82% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(260px);
   }
 }
 
