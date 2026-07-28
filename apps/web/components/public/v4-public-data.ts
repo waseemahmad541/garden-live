@@ -52,7 +52,7 @@ export const baseSections = [
 ];
 
 function cfg(slug: string, eyebrow: string, title: string, description: string, image: string, highlights: string[], primaryCta = "Book Garden Visit", secondaryCta = "Explore Services", secondaryHref = "/services"): PageConfig {
-  return { slug, eyebrow, title, description, image, primaryCta, secondaryCta, secondaryHref, highlights, stats: [{ value: "96", label: "sample health score" }, { value: "24h", label: "care visibility" }, { value: "360", label: "garden record" }], sections: baseSections, process: ["Consult", "Survey", "Recommend", "Approve", "Execute", "Report"] };
+  return { slug, eyebrow, title, description, image, primaryCta, secondaryCta, secondaryHref, highlights, stats: [{ value: "96", label: "garden health score" }, { value: "24h", label: "care visibility" }, { value: "360", label: "garden record" }], sections: baseSections, process: ["Consult", "Survey", "Recommend", "Approve", "Execute", "Report"] };
 }
 
 export const pageConfigs: Record<string, PageConfig> = {
