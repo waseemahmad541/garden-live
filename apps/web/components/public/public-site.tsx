@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Footer, Navbar } from "@/components/layout";
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 import { footerGroups, navItems, pageConfigs } from "@/components/public/v4-public-data";
 import { LaunchFloatingActions } from "@/components/public/public-launch-floating-actions";
 import {
