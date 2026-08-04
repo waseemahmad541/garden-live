@@ -4,8 +4,12 @@ import {
 } from "lucide-react";
 
 export const brandLine = "Garden Live - India's First AI Powered Digital Garden Membership Platform";
-export const whatsappHref = "https://wa.me/919999999999?text=I%20want%20to%20book%20a%20Garden%20Live%20visit";
-export const callHref = "tel:+919999999999";
+const publicContactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE?.replace(/[^\d]/g, "") ?? "";
+const publicWhatsAppPhone = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "").replace(/[^\d]/g, "");
+export const whatsappHref = publicWhatsAppPhone
+  ? `https://wa.me/${publicWhatsAppPhone}?text=I%20want%20to%20book%20a%20Garden%20Live%20visit`
+  : "/contact";
+export const callHref = publicContactPhone ? `tel:+${publicContactPhone}` : "/contact";
 
 export const img = {
   home: "/images/v4/hero-garden.svg",
