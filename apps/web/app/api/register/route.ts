@@ -4,9 +4,14 @@ import { prisma } from "@/lib/db/prisma";
 import { createNumericOtp, createSecureToken, hashToken } from "@/lib/auth/crypto";
 import { normalizeEmail, normalizePassword, normalizePhone } from "@/lib/auth/validators";
 import { apiError } from "@/lib/api/errors";
+import { enforceCsrf } from "@/lib/security/csrf";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 export async function POST(request: Request) {
   try {
+    enforceRateLimit(request, "register", 5, 60_000);
+    enforceCsrf(request);
+
     const body = await request.json().catch(() => ({}));
     const name = String(body.name ?? "").trim();
     const email = normalizeEmail(body.email);
