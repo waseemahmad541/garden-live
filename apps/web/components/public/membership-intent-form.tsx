@@ -5,11 +5,13 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { Button, Input } from "@/components";
 
 const plans = [
-  ["plant-care", "Plant Care"],
-  ["smart-garden", "Smart Garden"],
-  ["home-garden", "Home Garden"],
-  ["premium-garden", "Premium Garden"],
-  ["luxury-garden", "Luxury Garden"]
+  ["plant-care", "Plant Care - Rs. 199/month"],
+  ["smart-garden", "Smart Garden - Rs. 599/month"],
+  ["home-garden", "Home Garden - Rs. 1599/month"],
+  ["premium-garden", "Premium Garden - Rs. 2999/month"],
+  ["luxury-garden", "Luxury Garden - Rs. 8999/month"],
+  ["business-villa", "Business & Villa - Rs. 14999/month"],
+  ["dedicated-gardener", "Dedicated Gardener - Rs. 30000/month"]
 ];
 
 export function MembershipIntentForm() {
