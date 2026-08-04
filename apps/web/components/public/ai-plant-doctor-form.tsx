@@ -31,6 +31,26 @@ export function AIPlantDoctorForm() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [diagnosis, setDiagnosis] = React.useState<Diagnosis | null>(null);
+  const [imageDataUrl, setImageDataUrl] = React.useState<string>("");
+
+  function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    setError(null);
+    setImageDataUrl("");
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please upload a valid plant image.");
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      setError("Please upload an image under 4 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setImageDataUrl(String(reader.result ?? ""));
+    reader.onerror = () => setError("Could not read the uploaded image.");
+    reader.readAsDataURL(file);
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,12 +60,14 @@ export function AIPlantDoctorForm() {
 
     const form = new FormData(event.currentTarget);
     try {
+      const submittedImage = imageDataUrl || String(form.get("imageUrl") ?? "");
+      if (!submittedImage) throw new Error("Upload a plant photo or paste a plant image URL.");
       const response = await fetch("/api/public/ai-plant-doctor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plantName: form.get("plantName"),
-          imageUrl: form.get("imageUrl"),
+          imageUrl: submittedImage,
           symptoms: form.get("symptoms"),
           environment: form.get("environment")
         })
@@ -68,8 +90,27 @@ export function AIPlantDoctorForm() {
           <Input id="plantName" name="plantName" required minLength={2} placeholder="Areca Palm" />
         </div>
         <div>
-          <label className="text-sm font-semibold text-neutral-slate" htmlFor="imageUrl">Plant image URL</label>
-          <Input id="imageUrl" name="imageUrl" type="url" required placeholder="https://..." />
+          <label className="text-sm font-semibold text-neutral-slate" htmlFor="plantImage">Upload plant photo</label>
+          <input
+            id="plantImage"
+            name="plantImage"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={handleImage}
+            className="mt-2 w-full rounded-2xl border border-botanical-green/15 bg-white px-4 py-3 text-sm font-medium outline-none file:mr-4 file:rounded-full file:border-0 file:bg-botanical-green file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white focus:border-botanical-green"
+          />
+          {imageDataUrl ? (
+            <div
+              className="mt-3 h-40 overflow-hidden rounded-2xl border border-botanical-green/15 bg-cover bg-center"
+              style={{ backgroundImage: `url(${imageDataUrl})` }}
+              role="img"
+              aria-label="Uploaded plant preview"
+            />
+          ) : null}
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-neutral-slate" htmlFor="imageUrl">Or paste plant image URL</label>
+          <Input id="imageUrl" name="imageUrl" type="url" placeholder="https://example.com/plant-photo.jpg" />
         </div>
         <div>
           <label className="text-sm font-semibold text-neutral-slate" htmlFor="environment">Garden environment</label>
