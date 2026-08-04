@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { WebsiteCmsWorkspace, cmsModuleTitle, isCmsModule } from "@/components/admin/website-cms-workspace";
 import { AdminShell } from "@/components/admin/admin-ui";
+import { cmsModuleTitle, isCmsModule } from "@/components/admin/website-cms-config";
+import { WebsiteCmsWorkspace } from "@/components/admin/website-cms-workspace";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,11 @@ export function generateMetadata({ params }: WebsiteCmsModulePageProps): Metadat
     return { title: "Website CMS | Garden Live Admin", robots: { index: false, follow: false } };
   }
 
+  const title = cmsModuleTitle(params.module);
+
   return {
-    title: `${cmsModuleTitle(params.module)} | Website CMS | Garden Live Admin`,
-    description: `Manage ${cmsModuleTitle(params.module)} inside the Garden Live Website CMS.`,
+    title: `${title} | Website CMS | Garden Live Admin`,
+    description: `Manage ${title} inside the Garden Live Website CMS.`,
     robots: { index: false, follow: false }
   };
 }
