@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProjectDetailPage } from "@/components/public/static-public-pages";
-import { findProject, projectItems } from "@/components/public/public-content";
+import { getPublicProject } from "@/lib/public/public-content-db";
 
 export function generateStaticParams() {
-  return projectItems.map((project) => ({ slug: project.slug }));
+  return [];
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const project = findProject(params.slug);
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const project = await getPublicProject(params.slug);
   if (!project) return { title: "Project" };
   return {
     title: project.title,
@@ -22,8 +24,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function ProjectPage({ params }: { params: { slug: string } }) {
-  const project = findProject(params.slug);
+export default async function ProjectPage({ params }: { params: { slug: string } }) {
+  const project = await getPublicProject(params.slug);
   if (!project) notFound();
   return <ProjectDetailPage project={project} />;
 }
