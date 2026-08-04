@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { apiError, ApiError, apiResponse } from "@/lib/api/errors";
 import { requireApiSession } from "@/lib/api/auth";
+import { buildRecommendationEngine } from "@/lib/platform/ai-recommendations";
 import { diagnosePlantWithVision, plantDiagnosisInputSchema } from "@/lib/platform/ai";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +10,14 @@ export const dynamic = "force-dynamic";
 async function requireCustomer(userId: string) {
   const customer = await prisma.customer.findUnique({
     where: { userId },
-    select: { id: true }
+    select: {
+      id: true,
+      activeMemberships: {
+        where: { status: "ACTIVE", deletedAt: null },
+        select: { plan: { select: { name: true } } },
+        take: 1
+      }
+    }
   });
   if (!customer) throw new ApiError(403, "Customer profile is required for AI Plant Doctor.", "CUSTOMER_PROFILE_REQUIRED");
   return customer;
@@ -20,7 +28,11 @@ export async function POST(request: NextRequest) {
     const session = await requireApiSession();
     const customer = await requireCustomer(session.userId);
     const body = await request.json().catch(() => ({}));
-    const input = plantDiagnosisInputSchema.parse(body);
+    const parsedInput = plantDiagnosisInputSchema.parse(body);
+    const input = {
+      ...parsedInput,
+      membershipPlan: parsedInput.membershipPlan ?? customer.activeMemberships[0]?.plan.name
+    };
 
     if (input.plantId) {
       const plant = await prisma.plant.findFirst({
@@ -34,6 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const diagnosis = await diagnosePlantWithVision(input);
+    const recommendationEngine = await buildRecommendationEngine(input, diagnosis);
 
     const record = await prisma.aIDiagnosis.create({
       data: {
@@ -67,7 +80,7 @@ export async function POST(request: NextRequest) {
         action: "AI_PLANT_DOCTOR_DIAGNOSIS_CREATED",
         entityType: "AIDiagnosis",
         entityId: record.id,
-        newValue: JSON.parse(JSON.stringify(record)),
+        newValue: JSON.parse(JSON.stringify({ record, recommendationEngine })),
         ipAddress: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
         userAgent: request.headers.get("user-agent")
       }
@@ -77,7 +90,8 @@ export async function POST(request: NextRequest) {
       diagnosisId: record.id,
       plantName: input.plantName,
       environment: input.environment,
-      ...diagnosis
+      ...diagnosis,
+      recommendationEngine
     }, { status: 201 });
   } catch (error) {
     return apiError(error);
