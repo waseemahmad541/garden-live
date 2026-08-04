@@ -23,6 +23,7 @@ import {
 export { pageConfigs, PublicChrome };
 
 type PageSlug = keyof typeof pageConfigs;
+type ContactPageProps = { booking?: boolean };
 
 function getPage(slug: PageSlug): PageConfig {
   return pageConfigs[slug];
@@ -228,23 +229,23 @@ export function TestimonialsPage() {
   );
 }
 
-export function ContactPage() {
+export function ContactPage({ booking = false }: ContactPageProps = {}) {
   return (
     <PublicChrome>
       <Hero
-        eyebrow="Contact Garden Live"
-        title="Book a visit, request a proposal or speak with the Garden Live team."
-        description="Connect for landscaping, plant nursery, maintenance, dedicated gardener, memberships, AI Plant Doctor, QR Plant Passport and corporate solutions."
+        eyebrow={booking ? "Book Garden Visit" : "Contact Garden Live"}
+        title={booking ? "Schedule your Garden Live survey, visit or consultation." : "Book a visit, request a proposal or speak with the Garden Live team."}
+        description={booking ? "Share your city, garden type, service need and preferred time. Garden Live will recommend the right survey, consultation or care visit." : "Connect for landscaping, plant nursery, maintenance, dedicated gardener, memberships, AI Plant Doctor, QR Plant Passport and corporate solutions."}
         image={img.home}
-        primaryLabel="Book Garden Visit"
-        primaryHref="/book-garden-visit"
+        primaryLabel={booking ? "Submit Visit Request" : "Book Garden Visit"}
+        primaryHref={booking ? "#garden-live-enquiry" : "/book-garden-visit"}
         secondaryLabel="WhatsApp Garden Live"
         secondaryHref="https://wa.me/919999999999"
       />
-      <section className="py-24">
+      <section id="garden-live-enquiry" className="py-24">
         <div className="gl-container grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <ContactCards />
-          <EnquiryForm />
+          <EnquiryForm booking={booking} />
         </div>
       </section>
       <MapSection />
