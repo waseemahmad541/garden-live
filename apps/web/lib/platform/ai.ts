@@ -10,6 +10,7 @@ export const plantDiagnosisInputSchema = z.object({
     "Provide a valid plant image URL or uploaded image."
   ),
   environment: z.enum(["INDOOR", "OUTDOOR", "TERRACE", "BALCONY", "COMMERCIAL"]).default("INDOOR"),
+  membershipPlan: z.string().max(80).optional(),
   plantId: z.string().uuid().optional()
 });
 
@@ -59,7 +60,7 @@ export async function diagnosePlantWithVision(input: PlantDiagnosisInput): Promi
             content: [
               {
                 type: "text",
-                text: `Plant: ${input.plantName}. Environment: ${input.environment}. Symptoms: ${input.symptoms}.`
+                text: `Plant: ${input.plantName}. Environment: ${input.environment}. Membership plan: ${input.membershipPlan ?? "Not provided"}. Symptoms: ${input.symptoms}.`
               },
               {
                 type: "image_url",
