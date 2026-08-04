@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HomePublicPage } from "@/components/public/public-site";
+import { EcommerceHomePage } from "@/components/public/ecommerce-home-page";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gardenlive.in"),
@@ -75,7 +75,7 @@ export default function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      <HomePublicPage />
+      <EcommerceHomePage />
     </>
   );
 }
