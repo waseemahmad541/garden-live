@@ -6,8 +6,8 @@ import { LaunchFloatingActions } from "@/components/public/public-launch-floatin
 import {
   AiDemoSection,
   BeforeAfterSection,
-  ContactSection,
   DashboardPreviewSection,
+  EnquirySection,
   FaqSection,
   FloatingActions,
   GardenStoreSection,
@@ -17,8 +17,21 @@ import {
   MembershipSection,
   ModulesSection,
   ProjectsSection,
-  TestimonialsSection
+  TestimonialsBlock
 } from "@/components/public/v4-public-sections";
+
+function ContactSection() {
+  return (
+    <EnquirySection
+      title="Book a Garden Live visit"
+      description="Share your space, city and service need. Garden Live will recommend the right premium garden path."
+    />
+  );
+}
+
+function TestimonialsSection() {
+  return <TestimonialsBlock compact />;
+}
 
 export function PublicChrome({ children }: { children: ReactNode }) {
   return (
