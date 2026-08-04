@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Download, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { NewsletterForm } from "@/components/public/newsletter-form";
+import { callHref, whatsappHref } from "@/components/public/v4-public-data";
 
 interface FooterLinkGroup {
   title: string;
@@ -22,8 +23,8 @@ export function Footer({ groups }: FooterProps) {
             India&apos;s First AI Powered Digital Garden Membership Platform for premium landscaping, plant care, maintenance, and green commerce.
           </p>
           <div className="mt-5 grid gap-3 text-sm text-white/70">
-            <Link href="tel:+919999999999" className="flex items-center gap-2 transition hover:text-white"><Phone className="h-4 w-4" aria-hidden />Call Garden Live</Link>
-            <Link href="https://wa.me/919999999999?text=I%20want%20to%20book%20a%20Garden%20Live%20visit" className="flex items-center gap-2 transition hover:text-white"><MessageCircle className="h-4 w-4" aria-hidden />WhatsApp Garden Live</Link>
+            <Link href={callHref} className="flex items-center gap-2 transition hover:text-white"><Phone className="h-4 w-4" aria-hidden />Call Garden Live</Link>
+            <Link href={whatsappHref} className="flex items-center gap-2 transition hover:text-white"><MessageCircle className="h-4 w-4" aria-hidden />WhatsApp Garden Live</Link>
             <Link href="mailto:hello@gardenlive.in" className="flex items-center gap-2 transition hover:text-white"><Mail className="h-4 w-4" aria-hidden />hello@gardenlive.in</Link>
             <span className="flex items-center gap-2"><MapPin className="h-4 w-4" aria-hidden />India, multi-city ready</span>
           </div>
