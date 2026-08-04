@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
       whatsappFailure = error instanceof Error ? error.message : "WhatsApp delivery failed.";
     }
 
+    const businessWhatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? process.env.WHATSAPP_BUSINESS_PHONE_NUMBER ?? process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "";
+
     return apiResponse(
       {
         reference,
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
         channels: channelReadiness(),
         whatsappStatus,
         whatsappFailure,
-        whatsappUrl: whatsappLink("919999999999", `Garden Live visit ${reference}: ${booking.name}, ${booking.city}, ${type}`)
+        whatsappUrl: whatsappLink(businessWhatsAppNumber, `Garden Live visit ${reference}: ${booking.name}, ${booking.city}, ${type}`)
       },
       { status: 201 }
     );
