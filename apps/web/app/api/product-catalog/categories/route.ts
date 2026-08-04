@@ -1,14 +1,12 @@
 import type { NextRequest } from "next/server";
 import { apiError, apiResponse } from "@/lib/api/errors";
 import { requireApiSession } from "@/lib/api/auth";
-import { auditCatalog, ensureCatalogCategories, listCatalogCategories, requireCatalogAdmin, requireCatalogRead } from "@/lib/product-catalog/service";
+import { auditCatalog, ensureCatalogCategories, listCatalogCategories, requireCatalogAdmin } from "@/lib/product-catalog/service";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const session = await requireApiSession();
-    requireCatalogRead(session);
     return apiResponse(await listCatalogCategories());
   } catch (error) {
     return apiError(error);
