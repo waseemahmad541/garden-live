@@ -19,7 +19,7 @@ export function Footer({ groups }: FooterProps) {
         <div>
           <Image src="/images/logos/garden-live-logo.svg" alt="Garden Live" width={260} height={65} className="h-auto w-56 rounded-2xl" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-white/70">
-            India's First AI Powered Digital Garden Membership Platform for premium landscaping, plant care, maintenance, and green commerce.
+            India&apos;s First AI Powered Digital Garden Membership Platform for premium landscaping, plant care, maintenance, and green commerce.
           </p>
           <div className="mt-5 grid gap-3 text-sm text-white/70">
             <Link href="tel:+919999999999" className="flex items-center gap-2 transition hover:text-white"><Phone className="h-4 w-4" aria-hidden />Call Garden Live</Link>
