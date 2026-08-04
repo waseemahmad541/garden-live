@@ -43,7 +43,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
   if (!product) notFound();
 
   const image = product.mediaFiles.find((file) => file.type === "IMAGE" && file.url.startsWith("/"))?.url ?? "/images/v4/garden-store.svg";
-  const metadata = product.mediaFiles.find((file) => file.type === "OTHER" && typeof file.metadata === "object")?.metadata as Record<string, unknown> | undefined;
+  const metadataFile = product.mediaFiles.find((file) => file.type === "OTHER" && file.metadata && typeof file.metadata === "object" && !Array.isArray(file.metadata));
+  const metadata = metadataFile?.metadata as Record<string, unknown> | undefined;
   const features = [
     product.category?.name,
     metadata?.brand ? `Brand: ${metadata.brand}` : null,
