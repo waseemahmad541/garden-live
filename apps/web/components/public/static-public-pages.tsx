@@ -2,12 +2,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, CheckCircle2, Search, Share2 } from "lucide-react";
 import { Badge, Button, SectionHeading } from "@/components";
-import { blogPosts, findBlogPost, findProject, projectItems } from "@/components/public/public-content";
-import { FaqSection, Hero, PublicChrome } from "@/components/public/v4-public-sections";
+import { blogPosts, projectItems } from "@/components/public/public-content";
+import { EnquirySection, FaqSection, Hero, PublicChrome } from "@/components/public/v4-public-sections";
 import { img } from "@/components/public/v4-public-data";
 
-type BlogPost = NonNullable<ReturnType<typeof findBlogPost>>;
-type ProjectItem = NonNullable<ReturnType<typeof findProject>>;
+type BlogPostLike = {
+  slug: string;
+  title: string;
+  category: string;
+  date: string;
+  excerpt: string;
+  image: string;
+  readTime: string;
+  body: string[] | readonly string[];
+};
+type ProjectLike = {
+  slug: string;
+  title: string;
+  location: string;
+  category: string;
+  image: string;
+  summary: string;
+  highlights: string[] | readonly string[];
+};
 
 const policyContent = {
   "privacy-policy": {
@@ -109,7 +126,7 @@ export function FaqsPage() {
   );
 }
 
-export function BlogListingPage() {
+export function BlogListingPage({ posts = blogPosts, query = "" }: { posts?: readonly BlogPostLike[]; query?: string }) {
   return (
     <PublicChrome>
       <Hero eyebrow="Garden Live Blog" title="Care guides and operating notes for the future of gardens." description="Read insights on digital memberships, terrace gardens, AI plant health, Green Promise, nursery selection, and corporate greenery." image={img.night} primaryLabel="Book Visit" primaryHref="/book-garden-visit" secondaryLabel="Explore Services" secondaryHref="/services" />
@@ -124,17 +141,23 @@ export function BlogListingPage() {
             </form>
           </div>
           <div className="mt-10 flex flex-wrap gap-2">{["All", "Membership", "AI Plant Care", "Landscaping"].map((category) => <span key={category} className="rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-botanical-green">{category}</span>)}</div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {blogPosts.map((post) => <BlogCard key={post.slug} post={post} />)}
-          </div>
+          {posts.length ? (
+            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              {posts.map((post) => <BlogCard key={post.slug} post={post} />)}
+            </div>
+          ) : (
+            <div className="mt-10 rounded-[2rem] border border-white/80 bg-white/80 p-8 text-center shadow-[0_18px_60px_rgba(16,67,38,0.08)]">
+              <p className="text-2xl font-semibold">No published articles found.</p>
+              <p className="mt-3 text-sm leading-7 text-neutral-slate">{query ? "Try a different search term or check back after the next Garden Live article is published." : "Published blog articles will appear here from the Garden Live website CMS."}</p>
+            </div>
+          )}
         </div>
       </section>
     </PublicChrome>
   );
 }
 
-export function BlogDetailPage({ post }: { post: BlogPost }) {
-  const related = blogPosts.filter((item) => item.slug !== post.slug).slice(0, 2);
+export function BlogDetailPage({ post, related = [] }: { post: BlogPostLike; related?: readonly BlogPostLike[] }) {
   return (
     <PublicChrome>
       <Hero eyebrow={post.category} title={post.title} description={post.excerpt} image={post.image} primaryLabel="Book Free Visit" primaryHref="/book-garden-visit" secondaryLabel="Share Article" secondaryHref={`https://wa.me/?text=${encodeURIComponent(post.title + " https://gardenlive.in/blog/" + post.slug)}`} />
@@ -149,16 +172,27 @@ export function BlogDetailPage({ post }: { post: BlogPost }) {
   );
 }
 
-export function ProjectsListingPage() {
+export function ProjectsListingPage({ projects = projectItems }: { projects?: readonly ProjectLike[] }) {
   return (
     <PublicChrome>
       <Hero eyebrow="Projects Portfolio" title="Premium garden projects with every step documented." description="Garden Live tracks survey, quotation, approval, work orders, media, execution, handover and maintenance." image={img.villa} primaryLabel="Start Project" primaryHref="/book-garden-visit" secondaryLabel="Corporate Solutions" secondaryHref="/corporate-solutions" />
-      <section className="py-20"><div className="gl-container grid gap-5 lg:grid-cols-3">{projectItems.map((project) => <ProjectCard key={project.slug} project={project} />)}</div></section>
+      <section className="py-20">
+        <div className="gl-container">
+          {projects.length ? (
+            <div className="grid gap-5 lg:grid-cols-3">{projects.map((project) => <ProjectCard key={project.slug} project={project} />)}</div>
+          ) : (
+            <div className="rounded-[2rem] border border-white/80 bg-white/80 p-8 text-center shadow-[0_18px_60px_rgba(16,67,38,0.08)]">
+              <p className="text-2xl font-semibold">No published projects found.</p>
+              <p className="mt-3 text-sm leading-7 text-neutral-slate">Approved and completed Garden Live projects will appear here from PostgreSQL.</p>
+            </div>
+          )}
+        </div>
+      </section>
     </PublicChrome>
   );
 }
 
-export function ProjectDetailPage({ project }: { project: ProjectItem }) {
+export function ProjectDetailPage({ project }: { project: ProjectLike }) {
   return (
     <PublicChrome>
       <Hero eyebrow={project.category} title={project.title} description={project.summary} image={project.image} primaryLabel="Book Similar Project" primaryHref="/book-garden-visit" secondaryLabel="View Projects" secondaryHref="/projects" />
@@ -176,7 +210,7 @@ export function ProjectDetailPage({ project }: { project: ProjectItem }) {
   );
 }
 
-function BlogCard({ post }: { post: (typeof blogPosts)[number] }) {
+function BlogCard({ post }: { post: BlogPostLike }) {
   return (
     <Link href={`/blog/${post.slug}`} className="group overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 shadow-[0_18px_60px_rgba(16,67,38,0.08)] transition hover:-translate-y-1">
       <div className="relative h-64"><Image src={post.image} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="(min-width: 1024px) 33vw, 100vw" /></div>
@@ -185,7 +219,7 @@ function BlogCard({ post }: { post: (typeof blogPosts)[number] }) {
   );
 }
 
-function ProjectCard({ project }: { project: (typeof projectItems)[number] }) {
+function ProjectCard({ project }: { project: ProjectLike }) {
   return (
     <Link href={`/projects/${project.slug}`} className="group overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 shadow-[0_18px_60px_rgba(16,67,38,0.08)] transition hover:-translate-y-1">
       <div className="relative h-72"><Image src={project.image} alt={project.title} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="(min-width: 1024px) 33vw, 100vw" /></div>
