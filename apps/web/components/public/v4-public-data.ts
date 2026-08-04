@@ -73,7 +73,7 @@ export const pageConfigs: Record<string, PageConfig> = {
   "garden-health-reports": cfg("garden-health-reports", "Garden Health Reports", "A premium health report for every Garden Live garden.", "Garden health score, plant health score, soil tests, water tests, pest risk, AI recommendations and supervisor review.", img.care, ["Garden Health", "Plant Health", "Soil Test", "AI Recommendations"], "Generate Report", "Book Visit", "/book-garden-visit")
 };
 
-export const navItems = ["About:/about", "Services:/services", "Membership:/membership-plans", "AI Doctor:/ai-plant-doctor", "Store:/garden-store", "Projects:/projects", "Blog:/blog", "Contact:/contact"].map(toLink);
+export const navItems = ["Home:/", "Membership:/membership-plans", "AI Plant Doctor:/ai-plant-doctor", "Store:/garden-store", "Services:/services", "Projects:/projects", "About:/about", "Contact:/contact"].map(toLink);
 export const footerGroups = [
   { title: "Platform", links: ["AI Plant Doctor:/ai-plant-doctor", "Plant Scanner:/plant-scanner", "QR Plant Passport:/qr-plant-passport", "Garden Health:/garden-health-reports", "FAQs:/faqs"].map(toLink) },
   { title: "Services", links: ["Landscaping:/landscaping", "Plant Nursery:/plant-nursery", "Maintenance:/garden-maintenance", "Dedicated Gardener:/dedicated-gardener", "Corporate:/corporate-solutions"].map(toLink) },
