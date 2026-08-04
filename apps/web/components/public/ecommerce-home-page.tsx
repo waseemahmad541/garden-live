@@ -285,7 +285,7 @@ function MembershipPlansSection() {
               {plan.popular ? <Badge tone="premium">Most chosen</Badge> : <Badge tone="success">Monthly</Badge>}
               <h3 className="mt-5 text-2xl font-semibold">{plan.name}</h3>
               <p className={`mt-2 text-sm leading-6 ${plan.popular ? "text-white/70" : "text-neutral-slate"}`}>{plan.summary}</p>
-              <p className="mt-6 text-3xl font-semibold">{plan.price}<span className="text-sm font-medium opacity-65">/mo</span></p>
+              <p className="mt-6 text-3xl font-semibold">{plan.price}<span className="text-sm font-medium opacity-70">/mo</span></p>
               <ul className="mt-6 space-y-3">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex gap-2 text-sm">
