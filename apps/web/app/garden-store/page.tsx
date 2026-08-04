@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { pageConfigs, PublicPage } from "@/components/public/public-site";
+import { pageConfigs, PublicChrome } from "@/components/public/public-site";
+import { Hero, FaqSection, EnquirySection } from "@/components/public/v4-public-sections";
+import { PublicStoreWorkspace } from "@/components/public/public-store-workspace";
 
 export const metadata: Metadata = {
   title: "Garden Store",
@@ -7,5 +9,24 @@ export const metadata: Metadata = {
 };
 
 export default function GardenStorePage() {
-  return <PublicPage config={pageConfigs["garden-store"]} />;
+  const config = pageConfigs["garden-store"];
+  return (
+    <PublicChrome>
+      <Hero
+        eyebrow={config.eyebrow}
+        title={config.title}
+        description={config.description}
+        image={config.image}
+        primaryLabel="Search Products"
+        primaryHref="#store-products"
+        secondaryLabel={config.secondaryCta}
+        secondaryHref={config.secondaryHref}
+      />
+      <div id="store-products">
+        <PublicStoreWorkspace />
+      </div>
+      <FaqSection />
+      <EnquirySection title="Need help choosing plants?" description="Share your garden type and city. Garden Live will recommend plants, pots, medicines and care products for your space." />
+    </PublicChrome>
+  );
 }
