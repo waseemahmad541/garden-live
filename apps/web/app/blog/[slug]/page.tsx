@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogDetailPage } from "@/components/public/static-public-pages";
-import { blogPosts, findBlogPost } from "@/components/public/public-content";
+import { getPublishedBlogPost, getPublishedBlogPosts } from "@/lib/public/public-content-db";
 
 export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+  return [];
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const post = findBlogPost(params.slug);
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPublishedBlogPost(params.slug);
   if (!post) return { title: "Blog Article" };
   return {
     title: post.title,
@@ -22,8 +24,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = findBlogPost(params.slug);
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = await getPublishedBlogPost(params.slug);
   if (!post) notFound();
-  return <BlogDetailPage post={post} />;
+  const related = (await getPublishedBlogPosts()).filter((item) => item.slug !== post.slug).slice(0, 2);
+  return <BlogDetailPage post={post} related={related} />;
 }
