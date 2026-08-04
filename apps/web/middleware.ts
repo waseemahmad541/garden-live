@@ -40,8 +40,11 @@ const publicRoutes = [
   "/unauthorized"
 ];
 
+const publicRoutePrefixes = ["/blog/", "/projects/", "/garden-store/"];
+
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const isPublicRoute = publicRoutes.includes(pathname) || publicRoutePrefixes.some((prefix) => pathname.startsWith(prefix));
 
   if (
     pathname.startsWith("/api/auth") ||
@@ -51,7 +54,7 @@ export default async function middleware(request: NextRequest) {
     pathname.startsWith("/api/email") ||
     pathname.startsWith("/api/phone") ||
     pathname.startsWith("/api") ||
-    publicRoutes.includes(pathname)
+    isPublicRoute
   ) {
     return NextResponse.next();
   }
