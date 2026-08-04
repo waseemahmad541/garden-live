@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { apiError, apiResponse } from "@/lib/api/errors";
-import { requireApiSession } from "@/lib/api/auth";
-import { getProductForCatalog, requireCatalogRead } from "@/lib/product-catalog/service";
+import { canonicalSiteUrl } from "@/lib/env/urls";
+import { getProductForCatalog } from "@/lib/product-catalog/service";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +12,9 @@ const shareSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireApiSession();
-    requireCatalogRead(session);
     const input = shareSchema.parse(await request.json());
     const product = await getProductForCatalog(input.productId);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3000";
+    const baseUrl = canonicalSiteUrl();
     return apiResponse({
       productId: input.productId,
       title: product.productName,
