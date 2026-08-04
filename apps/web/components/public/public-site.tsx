@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components";
 import { EnquiryForm } from "@/components/public/enquiry-form";
-import { brandLine, img, pageConfigs, type PageConfig } from "@/components/public/v4-public-data";
+import { brandLine, img, pageConfigs, type PageConfig, whatsappHref } from "@/components/public/v4-public-data";
 import {
   BeforeAfter,
   ContactCards,
@@ -240,7 +240,7 @@ export function ContactPage({ booking = false }: ContactPageProps = {}) {
         primaryLabel={booking ? "Submit Visit Request" : "Book Garden Visit"}
         primaryHref={booking ? "#garden-live-enquiry" : "/book-garden-visit"}
         secondaryLabel="WhatsApp Garden Live"
-        secondaryHref="https://wa.me/919999999999"
+        secondaryHref={whatsappHref}
       />
       <section id="garden-live-enquiry" className="py-24">
         <div className="gl-container grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
