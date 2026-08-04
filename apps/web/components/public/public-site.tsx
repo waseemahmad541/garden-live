@@ -20,7 +20,7 @@ import {
   TestimonialsBlock
 } from "@/components/public/v4-public-sections";
 
-export { PublicChrome };
+export { pageConfigs, PublicChrome };
 
 type PageSlug = keyof typeof pageConfigs;
 
