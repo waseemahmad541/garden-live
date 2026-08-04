@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, CreditCard, Loader2, Minus, Plus, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, CreditCard, Loader2, Minus, Plus, ShieldCheck, ShoppingBag } from "lucide-react";
 import { Badge, Button, Input } from "@/components";
 
 const initialItems = [
@@ -10,6 +10,16 @@ const initialItems = [
   { sku: "GL-CARE-NEEM", name: "Neem Plant Medicine Spray", quantity: 1, unitPrice: 399 },
   { sku: "GL-POT-CERAMIC", name: "Self-Watering Ceramic Planter", quantity: 1, unitPrice: 1299 }
 ];
+
+const initialCustomer = {
+  name: "",
+  email: "",
+  phone: "",
+  line1: "",
+  city: "",
+  state: "",
+  pincode: ""
+};
 
 type CheckoutResult = {
   reference: string;
@@ -26,6 +36,7 @@ type CheckoutResult = {
 
 export function CheckoutWorkspace() {
   const [items, setItems] = React.useState(initialItems);
+  const [customer, setCustomer] = React.useState(initialCustomer);
   const [provider, setProvider] = React.useState<"RAZORPAY" | "STRIPE">("RAZORPAY");
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState<CheckoutResult | null>(null);
@@ -39,6 +50,10 @@ export function CheckoutWorkspace() {
     setItems((current) => current.map((item) => (item.sku === sku ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item)));
   }
 
+  function updateCustomer(field: keyof typeof initialCustomer, value: string) {
+    setCustomer((current) => ({ ...current, [field]: value }));
+  }
+
   async function checkout() {
     setLoading(true);
     setError(null);
@@ -50,15 +65,15 @@ export function CheckoutWorkspace() {
         body: JSON.stringify({
           provider,
           customer: {
-            name: "Garden Live Customer",
-            email: "customer@gardenlive.in",
-            phone: "+91 99999 99999"
+            name: customer.name,
+            email: customer.email,
+            phone: customer.phone
           },
           shippingAddress: {
-            line1: "Garden Live service address",
-            city: "Hyderabad",
-            state: "Telangana",
-            pincode: "500001"
+            line1: customer.line1,
+            city: customer.city,
+            state: customer.state,
+            pincode: customer.pincode
           },
           items
         })
@@ -112,10 +127,13 @@ export function CheckoutWorkspace() {
           <div className="rounded-3xl border border-[#dfe7dc] bg-white p-5 shadow-glSm">
             <h2 className="text-xl font-semibold">Customer and delivery details</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Input label="Customer" value="Garden Live Customer" readOnly />
-              <Input label="Phone" value="+91 99999 99999" readOnly />
-              <Input label="City" value="Hyderabad" readOnly />
-              <Input label="Pincode" value="500001" readOnly />
+              <Input label="Customer" value={customer.name} onChange={(event) => updateCustomer("name", event.target.value)} required />
+              <Input label="Email" type="email" value={customer.email} onChange={(event) => updateCustomer("email", event.target.value)} required />
+              <Input label="Phone" value={customer.phone} onChange={(event) => updateCustomer("phone", event.target.value)} required />
+              <Input label="Address" value={customer.line1} onChange={(event) => updateCustomer("line1", event.target.value)} required />
+              <Input label="City" value={customer.city} onChange={(event) => updateCustomer("city", event.target.value)} required />
+              <Input label="State" value={customer.state} onChange={(event) => updateCustomer("state", event.target.value)} required />
+              <Input label="Pincode" value={customer.pincode} onChange={(event) => updateCustomer("pincode", event.target.value)} required />
             </div>
           </div>
         </div>
