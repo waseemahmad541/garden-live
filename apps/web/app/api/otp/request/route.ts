@@ -5,6 +5,8 @@ import { normalizeOtpPurpose, normalizePhone } from "@/lib/auth/validators";
 import { apiError } from "@/lib/api/errors";
 import { sendSms } from "@/lib/platform/notifications";
 import { jsonValue } from "@/lib/platform/providers";
+import { enforceCsrf } from "@/lib/security/csrf";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 function errorMetadata(error: unknown) {
   return {
@@ -15,6 +17,9 @@ function errorMetadata(error: unknown) {
 
 export async function POST(request: Request) {
   try {
+    enforceRateLimit(request, "otp-request", 5, 60_000);
+    enforceCsrf(request);
+
     const body = await request.json().catch(() => ({}));
     const phone = normalizePhone(body.phone);
     const purpose = normalizeOtpPurpose(body.purpose);
@@ -73,7 +78,7 @@ export async function POST(request: Request) {
           sentAt: new Date(),
           metadata: jsonValue({
             authOtpId: authOtp.id,
-            provider: "sms",
+            provider: "msg91",
             providerResult
           })
         }
@@ -96,7 +101,7 @@ export async function POST(request: Request) {
           status: "FAILED",
           metadata: jsonValue({
             authOtpId: authOtp.id,
-            provider: "sms",
+            provider: "msg91",
             error: errorMetadata(error)
           })
         }
