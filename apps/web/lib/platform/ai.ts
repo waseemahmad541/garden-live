@@ -5,7 +5,10 @@ import { providerFetch, requiredEnv } from "@/lib/platform/providers";
 export const plantDiagnosisInputSchema = z.object({
   plantName: z.string().min(2).max(120),
   symptoms: z.string().min(8).max(1200),
-  imageUrl: z.string().url(),
+  imageUrl: z.string().min(10).refine(
+    (value) => z.string().url().safeParse(value).success || /^data:image\/(png|jpe?g|webp);base64,/i.test(value),
+    "Provide a valid plant image URL or uploaded image."
+  ),
   environment: z.enum(["INDOOR", "OUTDOOR", "TERRACE", "BALCONY", "COMMERCIAL"]).default("INDOOR"),
   plantId: z.string().uuid().optional()
 });
