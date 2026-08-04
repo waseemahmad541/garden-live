@@ -35,12 +35,14 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    const businessWhatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? process.env.WHATSAPP_BUSINESS_PHONE_NUMBER ?? process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "";
+
     return apiResponse(
       {
         reference,
         message: "Garden Live received your enquiry. Our team will contact you for the next step.",
         channels: channelReadiness(),
-        whatsappUrl: whatsappLink("919999999999", `Garden Live enquiry ${reference}: ${enquiry.name}, ${enquiry.city}, ${enquiry.service}`)
+        whatsappUrl: whatsappLink(businessWhatsAppNumber, `Garden Live enquiry ${reference}: ${enquiry.name}, ${enquiry.city}, ${enquiry.service}`)
       },
       { status: 201 }
     );
