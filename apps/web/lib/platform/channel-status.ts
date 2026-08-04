@@ -26,5 +26,5 @@ export function channelReadiness(): ChannelStatus[] {
 
 export function whatsappLink(phone: string, message: string) {
   const normalized = phone.replace(/[^\d]/g, "");
-  return `https://wa.me/${normalized || "919999999999"}?text=${encodeURIComponent(message)}`;
+  return normalized ? `https://wa.me/${normalized}?text=${encodeURIComponent(message)}` : undefined;
 }
