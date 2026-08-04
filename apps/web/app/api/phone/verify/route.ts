@@ -3,9 +3,14 @@ import { prisma } from "@/lib/db/prisma";
 import { hashToken } from "@/lib/auth/crypto";
 import { normalizeOtp, normalizePhone } from "@/lib/auth/validators";
 import { apiError } from "@/lib/api/errors";
+import { enforceCsrf } from "@/lib/security/csrf";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 export async function POST(request: Request) {
   try {
+    enforceRateLimit(request, "phone-verify", 10, 60_000);
+    enforceCsrf(request);
+
     const body = await request.json().catch(() => ({}));
     const phone = normalizePhone(body.phone);
     const otp = normalizeOtp(body.otp);
